@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 from blur_the_face_video import face_blurring, face_pixelate
 from fastapi import FastAPI, File, Request, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from PIL import Image
 
@@ -17,9 +18,18 @@ app = FastAPI(
     description="""An API for Automatic Face Pixellization of Images""",
 )
 
+origins = ["*"]
 
-@app.get("/")
-async def running():
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/", response_class=PlainTextResponse, tags=["home"])
+async def home():
     note = """
     Face Pixelizer API 📚
     An API for Automatic Face Pixellization of Images!
