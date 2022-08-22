@@ -51,7 +51,7 @@ async def detect_object(file: UploadFile = File(...)):
     try:
         input_size = 416
         original_image = cv2.imread('image.jpg')
-        original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
+        #original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
         original_image_size = original_image.shape[:2]
 
         image_data = image_preprocess(np.copy(original_image), [input_size, input_size])
