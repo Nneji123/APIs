@@ -2,8 +2,8 @@ FROM python:3.8.13-slim-bullseye
 
 WORKDIR /app
 
-# RUN apt-get -y update  && apt-get install -y \
-#   python3-dev \
+RUN apt-get -y update  && apt-get install -y \
+  wget 
 #   apt-utils \
 #   python-dev \
 #   tesseract-ocr \

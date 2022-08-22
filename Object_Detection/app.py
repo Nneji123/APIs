@@ -1,70 +1,74 @@
-from fastapi import FastAPI, File
-from segmentation import get_yolov5, get_image_from_bytes
-from starlette.responses import Response
 import io
+import os
+import sys
+
+import cv2
+import numpy as np
+from object_detection import *
+from fastapi import FastAPI, File, Request, UploadFile
+from fastapi.responses import FileResponse
 from PIL import Image
-import json
-from fastapi.middleware.cors import CORSMiddleware
 
+sys.path.append(os.path.abspath(os.path.join("..", "config")))
 
-model = get_yolov5()
 
 app = FastAPI(
-    title="Custom YOLOV5 Machine Learning API",
-    description="""Obtain object value out of image
-                    and return image and json result""",
-    version="0.0.1",
-)
-
-origins = [
-    "http://localhost",
-    "http://localhost:8000",
-    "*"
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    title="Object Detection API",
+    description="""An API for Detecting Objects in images.""",
 )
 
 
-@app.get('/notify/v1/health')
-def get_health():
+@app.get("/")
+async def running():
+    note = """
+    Object Detection API 📚
+    An API for detecting objects in images!
+    Note: add "/redoc" to get the complete documentation.
     """
-    Usage on K8S
-    readinessProbe:
-        httpGet:
-            path: /notify/v1/health
-            port: 80
-    livenessProbe:
-        httpGet:
-            path: /notify/v1/health
-            port: 80
-    :return:
-        dict(msg='OK')
-    """
-    return dict(msg='OK')
+    return note
 
 
-@app.post("/object-to-json")
-async def detect_food_return_json_result(file: bytes = File(...)):
-    input_image = get_image_from_bytes(file)
-    results = model(input_image)
-    detect_res = results.pandas().xyxy[0].to_json(orient="records")  # JSON img1 predictions
-    detect_res = json.loads(detect_res)
-    return {"result": detect_res}
+# endpoint for just enhancing the image
+@app.post("/detect-object")
+async def detect_object(file: UploadFile = File(...)):
 
+    contents = io.BytesIO(await file.read())
+    file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
+    img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+    cv2.imwrite("image.jpg", img)
+    
+    
+    try:
+        input_size = 416
+        original_image = cv2.imread('image.jpg')
+        original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
+        original_image_size = original_image.shape[:2]
 
-@app.post("/object-to-img")
-async def detect_food_return_base64_img(file: bytes = File(...)):
-    input_image = get_image_from_bytes(file)
-    results = model(input_image)
-    results.render()  # updates results.imgs with boxes and labels
-    for img in results.imgs:
-        bytes_io = io.BytesIO()
-        img_base64 = Image.fromarray(img)
-        img_base64.save(bytes_io, format="jpeg")
-    return Response(content=bytes_io.getvalue(), media_type="image/jpeg")
+        image_data = image_preprocess(np.copy(original_image), [input_size, input_size])
+        image_data = image_data[np.newaxis, ...].astype(np.float32)
+        sess = rt.InferenceSession("models/model.onnx")
+
+        outputs = sess.get_outputs()
+        output_names = list(map(lambda output: output.name, outputs))
+        input_name = sess.get_inputs()[0].name
+
+        detections = sess.run(output_names, {input_name: image_data})
+        print("Output shape:", list(map(lambda detection: detection.shape, detections)))
+
+        
+        ANCHORS = "models/anchors.txt"
+        STRIDES = [8, 16, 32]
+        XYSCALE = [1.2, 1.1, 1.05]
+
+        ANCHORS = get_anchors(ANCHORS)
+        STRIDES = np.array(STRIDES)
+
+        pred_bbox = postprocess_bbbox(detections, ANCHORS, STRIDES, XYSCALE)
+        bboxes = postprocess_boxes(pred_bbox, original_image_size, input_size, 0.25)
+        bboxes = nms(bboxes, 0.213, method='nms')
+        image = draw_bbox(original_image, bboxes)
+        cv2.imwrite("output.jpg",image)
+        return FileResponse("output.jpg", media_type="image/jpg")
+    except ValueError:
+        vals = "Error! Please upload a valid image type."
+        return vals
