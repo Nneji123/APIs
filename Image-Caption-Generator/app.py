@@ -1,6 +1,3 @@
-from utility import caption
-
-
 import io
 import os
 import sys
@@ -11,13 +8,14 @@ from fastapi import FastAPI, File, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
 from PIL import Image
+from utility import caption
 
 sys.path.append(os.path.abspath(os.path.join("..", "config")))
 
 
 app = FastAPI(
-    title="Face Pixelizer API",
-    description="""An API for Automatic Face Pixellization of Images""",
+    title="Image Caption Generator API",
+    description="""An API for generating caption of images.""",
 )
 
 origins = ["*"]
@@ -33,15 +31,15 @@ app.add_middleware(
 @app.get("/", response_class=PlainTextResponse, tags=["home"])
 async def home():
     note = """
-    Face Pixelizer API 📚
-    An API for Automatic Face Pixellization of Images!
+    Image Caption Generator API 📚
+    An API for generating caption of images!
     Note: add "/redoc" to get the complete documentation.
     """
     return note
 
 
-@app.post("/blur")
-async def face_blur(file: UploadFile = File(...)):
+@app.post("/generate-caption")
+async def generate_caption(file: UploadFile = File(...)):
 
     contents = io.BytesIO(await file.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
@@ -55,19 +53,3 @@ async def face_blur(file: UploadFile = File(...)):
     except ValueError:
         vals = "Error! Please upload a valid image type."
         return vals
-
-
-
-# @app.route("/upload",methods=["GET","POST"])
-# def upload():
-#     description = None
-#     p=None
-#     if request.method == "POST" and 'photo' in request.files:
-#         filename = photos.save(request.files['photo'])
-#         p = path+'/'+filename
-#         description = caption(p)
-#     return render_template('upload.html',cp=description,src = p)
-
-# @app.route('/developer',methods=["GET","POST"])
-# def developer():
-#     return render_template('dev.html')
