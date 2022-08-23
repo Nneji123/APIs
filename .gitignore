@@ -130,3 +130,5 @@ dmypy.json
 colorization_release_v2.caffemodel
 model.onnx
 yolov4.tar.gz
+model_9.h5
+features.p
