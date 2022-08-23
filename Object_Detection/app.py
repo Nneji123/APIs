@@ -6,7 +6,8 @@ import cv2
 import numpy as np
 from object_detection import *
 from fastapi import FastAPI, File, Request, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, PlainTextResponse
 from PIL import Image
 
 sys.path.append(os.path.abspath(os.path.join("..", "config")))
@@ -17,9 +18,18 @@ app = FastAPI(
     description="""An API for Detecting Objects in images.""",
 )
 
+origins = ["*"]
 
-@app.get("/")
-async def running():
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/", response_class=PlainTextResponse, tags=["home"])
+async def home():
     note = """
     Object Detection API 📚
     An API for detecting objects in images!
@@ -41,7 +51,7 @@ async def detect_object(file: UploadFile = File(...)):
     try:
         input_size = 416
         original_image = cv2.imread('image.jpg')
-        original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
+        #original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
         original_image_size = original_image.shape[:2]
 
         image_data = image_preprocess(np.copy(original_image), [input_size, input_size])
