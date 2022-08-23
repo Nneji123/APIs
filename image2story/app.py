@@ -35,36 +35,41 @@ class GenerateStory(BaseModel):
     model: str
     genre: str
     n_stories: int
+    use_beam_search: bool
 
     class Config:
         schema_extra = {
             "example": {
                 "model" : "coco",
-                "genre": 100,
-                "n_stories" :1
+                "genre": "superhero",
+                "n_stories" :1,
+                "use_beam_search":False
             }
         }
 
 coco_weights = 'coco_weights.pt'
 conceptual_weights = 'conceptual_weights.pt'
 
-@app.post("/generate-story")
-async def generate_storys(pil_image, data: GenerateStory, use_beam_search=False, file: UploadFile = File(...)):
-    if data.model.lower()=='coco':
-        model_file = coco_weights
-    elif data.model.lower()=='conceptual':
-        model_file = conceptual_weights
 
+@app.post("/upload-and-save-image")
+async def upload_save_image(file: UploadFile = File(...)):
     contents = io.BytesIO(await file.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     cv2.imwrite("image.jpg", img)
-    pil_image = Image.open("image.jpg")
+    return "Upload Successful!"
 
+@app.post("/generate-story", response_class=PlainTextResponse, description="You can select the genre e.g sci_fi, action, drama, horror, thriller")
+async def generate_storys(data: GenerateStory):
+    if data.model.lower()=='coco':
+        model_file = coco_weights
+    elif data.model.lower()=='conceptual':
+        model_file = conceptual_weights
+    pil_image = Image.open("image.jpg")
     image_caption = generate_caption(
         model_path=model_file,
         pil_image=pil_image,
-        use_beam_search=use_beam_search,
+        use_beam_search=data.use_beam_search,
     )
     story = generate_story(image_caption, pil_image, data.genre.lower(), data.n_stories)
     return story

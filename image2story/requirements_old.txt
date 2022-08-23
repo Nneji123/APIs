@@ -1,0 +1,9 @@
+torch
+numpy
+gdown
+transformers
+tqdm
+Pillow
+scikit-image
+git+https://github.com/openai/CLIP.git
+fastapi[all]
