@@ -66,17 +66,20 @@ async def upload_save_image(file: UploadFile = File(...)):
     cv2.imwrite("image.jpg", img)
     return "Upload Successful!"
 
-@app.post("/generate-story", response_class=PlainTextResponse, description="You can select the genre e.g sci_fi, action, drama, horror, thriller")
+@app.post("/generate-story", response_class=PlainTextResponse, description="You can select the genre e.g sci_fi, action, drama, horror, thriller. Models: coco, conceptual")
 async def generate_storys(data: GenerateStory):
-    if data.model.lower()=='coco':
-        model_file = coco_weights
-    elif data.model.lower()=='conceptual':
-        model_file = conceptual_weights
-    pil_image = Image.open("image.jpg")
-    image_caption = generate_caption(
-        model_path=model_file,
-        pil_image=pil_image,
-        use_beam_search=data.use_beam_search,
-    )
-    story = generate_story(image_caption, pil_image, data.genre.lower(), data.n_stories)
-    return story
+    try:
+        if data.model.lower()=='coco':
+            model_file = coco_weights
+        elif data.model.lower()=='conceptual':
+            model_file = conceptual_weights
+        pil_image = Image.open("image.jpg")
+        image_caption = generate_caption(
+            model_path=model_file,
+            pil_image=pil_image,
+            use_beam_search=data.use_beam_search,
+        )
+        story = generate_story(image_caption, pil_image, data.genre.lower(), data.n_stories)
+        return story
+    except FileNotFoundError as e:
+        return "Please upload an image!"
