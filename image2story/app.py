@@ -10,13 +10,14 @@ from fastapi import FastAPI, File, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 from PIL import Image
+from pydantic import BaseModel
 
 sys.path.append(os.path.abspath(os.path.join("..", "config")))
 
 
 app = FastAPI(
-    title="Face Pixelizer API",
-    description="""An API for Automatic Face Pixellization of Images""",
+    title="Image2Story API",
+    description="""An API for creating stories from an input image.""",
 )
 
 origins = ["*"]
@@ -29,7 +30,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from pydantic import BaseModel
+@app.get("/", response_class=PlainTextResponse, tags=["home"])
+async def home():
+    note = """
+    Image2Story API 📚
+    Note: add "/redoc" to get the complete documentation.
+    """
+    return note
 
 class GenerateStory(BaseModel):
     model: str
