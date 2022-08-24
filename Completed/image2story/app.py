@@ -52,6 +52,19 @@ class GenerateStory(BaseModel):
             }
         }
 
+
+class GenerateCaption(BaseModel):
+    model: str
+    use_beam_search: bool
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "model" : "coco",
+                "use_beam_search":False
+            }
+        }
+
 coco_weights = 'coco_weights.pt'
 conceptual_weights = 'conceptual_weights.pt'
 
@@ -68,6 +81,28 @@ async def upload_save_image(username:str, file: UploadFile = File(...)):
     except FileExistsError as e:
         cv2.imwrite(f"./{username}/image.jpg", img)
         return "Upload Successful!"
+
+
+@app.post("/generate-caption/{username}", response_class=PlainTextResponse, description="You can select the genre e.g sci_fi, action, drama, horror, thriller. Models: coco, conceptual")
+async def generate_cap(username:str, data: GenerateCaption):
+    try:
+        if data.model.lower()=='coco':
+            model_file = coco_weights
+        elif data.model.lower()=='conceptual':
+            model_file = conceptual_weights
+        pil_image = Image.open(f"./{username}/image.jpg")
+        image_caption = generate_caption(
+            model_path=model_file,
+            pil_image=pil_image,
+            use_beam_search=data.use_beam_search,
+        )
+        story = image_caption
+        time.sleep(1)
+        os.system(f"rm -rf {username}")
+        return story
+    except FileNotFoundError as e:
+        return "Please upload an image!"
+
 
 
 @app.post("/generate-story/{username}", response_class=PlainTextResponse, description="You can select the genre e.g sci_fi, action, drama, horror, thriller. Models: coco, conceptual")
@@ -89,3 +124,47 @@ async def generate_storys(username:str, data: GenerateStory):
         return story
     except FileNotFoundError as e:
         return "Please upload an image!"
+
+
+# import resource
+# import platform
+# import sys
+
+# def memory_limit(percentage: float):
+#     """
+#     只在linux操作系统起作用
+#     """
+#     if platform.system() != "Linux":
+#         print('Only works on linux!')
+#         return
+#     soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+#     resource.setrlimit(resource.RLIMIT_AS, (get_memory() * 1024 * percentage, hard))
+
+# def get_memory():
+#     with open('/proc/meminfo', 'r') as mem:
+#         free_memory = 0
+#         for i in mem:
+#             sline = i.split()
+#             if str(sline[0]) in ('MemFree:', 'Buffers:', 'Cached:'):
+#                 free_memory += int(sline[1])
+#     return free_memory
+
+# def memory(percentage=0.8):
+#     def decorator(function):
+#         def wrapper(*args, **kwargs):
+#             memory_limit(percentage)
+#             try:
+#                 return function(*args, **kwargs)
+#             except MemoryError:
+#                 mem = get_memory() / 1024 /1024
+#                 print('Remain: %.2f GB' % mem)
+#                 sys.stderr.write('\n\nERROR: Memory Exception\n')
+#                 sys.exit(1)
+#         return wrapper
+#     return decorator
+
+# @memory(percentage=0.80)
+# def main():
+#     print(f'My memory is limited to 80%.')
+
+# main()
