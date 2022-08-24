@@ -1,6 +1,7 @@
 import io
 import os
 import sys
+import time
 
 import cv2
 import numpy as np
@@ -11,6 +12,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 from PIL import Image
 from pydantic import BaseModel
+# import warnings
+# warnings.filterignore
 
 sys.path.append(os.path.abspath(os.path.join("..", "config")))
 
@@ -38,6 +41,11 @@ async def home():
     """
     return note
 
+@app.get("/username", response_class=PlainTextResponse, tags=["home"])
+async def get_username(username: str):
+    
+    return username
+
 class GenerateStory(BaseModel):
     model: str
     genre: str
@@ -58,28 +66,36 @@ coco_weights = 'coco_weights.pt'
 conceptual_weights = 'conceptual_weights.pt'
 
 
-@app.post("/upload-and-save-image")
-async def upload_save_image(file: UploadFile = File(...)):
+@app.post("/upload-and-save-image/{username}")
+async def upload_save_image(username:str, file: UploadFile = File(...)):
     contents = io.BytesIO(await file.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-    cv2.imwrite("image.jpg", img)
-    return "Upload Successful!"
+    try:
+        os.makedirs(str(username))
+        cv2.imwrite(f"./{username}/image.jpg", img)
+        return "Upload Successful!"
+    except FileExistsError as e:
+        cv2.imwrite(f"./{username}/image.jpg", img)
+        return "Upload Successful!"
 
-@app.post("/generate-story", response_class=PlainTextResponse, description="You can select the genre e.g sci_fi, action, drama, horror, thriller. Models: coco, conceptual")
-async def generate_storys(data: GenerateStory):
+
+@app.post("/generate-story/{username}", response_class=PlainTextResponse, description="You can select the genre e.g sci_fi, action, drama, horror, thriller. Models: coco, conceptual")
+async def generate_storys(username:str, data: GenerateStory):
     try:
         if data.model.lower()=='coco':
             model_file = coco_weights
         elif data.model.lower()=='conceptual':
             model_file = conceptual_weights
-        pil_image = Image.open("image.jpg")
+        pil_image = Image.open(f"./{username}/image.jpg")
         image_caption = generate_caption(
             model_path=model_file,
             pil_image=pil_image,
             use_beam_search=data.use_beam_search,
         )
         story = generate_story(image_caption, pil_image, data.genre.lower(), data.n_stories)
+        time.sleep(1)
+        os.system(f"rm -rf {username}")
         return story
     except FileNotFoundError as e:
         return "Please upload an image!"
