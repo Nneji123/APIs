@@ -1,5 +1,4 @@
 import os
-import gradio as gr
 from model import classify_image
 from PIL import Image
 import numpy as np
