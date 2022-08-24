@@ -113,7 +113,7 @@ def generate_beam(
     beam_size: int = 5,
     prompt=None,
     embed=None,
-    entry_length=67,
+    entry_length=1000,
     temperature=1.0,
     stop_token: str = ".",
 ):
@@ -190,7 +190,7 @@ def generate2(
     prompt=None,
     embed=None,
     entry_count=1,
-    entry_length=67,  # maximum number of words
+    entry_length=1000,  # maximum number of words
     top_p=0.8,
     temperature=1.0,
     stop_token: str = ".",
