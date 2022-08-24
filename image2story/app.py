@@ -11,6 +11,8 @@ from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import PlainTextResponse
 from PIL import Image
 from pydantic import BaseModel
+import warnings
+warnings.filterwarnings("ignore")
 
 sys.path.append(os.path.abspath(os.path.join("..", "config")))
 

@@ -1,5 +1,3 @@
-coco_weights.pt
-conceptual_weights.pt
 *.jpg
 __pycache__/
 app2.py
