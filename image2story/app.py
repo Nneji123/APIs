@@ -7,13 +7,10 @@ import cv2
 import numpy as np
 from prefix_clip import download_pretrained_model, generate_caption
 from gpt2_story_gen import generate_story
-from fastapi import FastAPI, File, Request, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import PlainTextResponse
 from PIL import Image
 from pydantic import BaseModel
-# import warnings
-# warnings.filterignore
 
 sys.path.append(os.path.abspath(os.path.join("..", "config")))
 
@@ -23,15 +20,6 @@ app = FastAPI(
     description="""An API for creating stories from an input image.""",
 )
 
-origins = ["*"]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 @app.get("/", response_class=PlainTextResponse, tags=["home"])
 async def home():
