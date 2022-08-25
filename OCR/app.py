@@ -54,7 +54,6 @@ async def get_ocr_image(file: UploadFile = File(...), lang: str = "en"):
         return vals
 
 
-
 @app.post("/text-ocr")
 async def get_text_ocr_image(file: UploadFile = File(...), lang: str = "en") -> dict:
 
@@ -65,8 +64,7 @@ async def get_text_ocr_image(file: UploadFile = File(...), lang: str = "en") -> 
     try:
         image = Image.open("image.jpg")
         text = get_text(image, lang)
-        # cv2.imwrite("output.jpg", images)
-        # print("Making prediction...")
+        print("Making prediction...")
         return text
     except ValueError:
         vals = "Error! Please upload a valid image type."
