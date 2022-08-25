@@ -1,0 +1,7 @@
+timm
+numpy
+torch
+opencv-python-headless
+Pillow
+scikit-image
+natsort

@@ -17,6 +17,6 @@ RUN pip install torch torchvision torchaudio --extra-index-url https://download.
 
 EXPOSE 8000:8000
 
-RUN python download.py
+RUN python models.py
 
 CMD uvicorn app:app --host 0.0.0.0 --port 8000
