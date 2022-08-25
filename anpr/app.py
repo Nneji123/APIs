@@ -8,7 +8,7 @@ from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
 from PIL import Image
-from detections import *
+from detections import get_plates_from_image
 
 sys.path.append(os.path.abspath(os.path.join("..", "config")))
 

@@ -12,5 +12,9 @@ if not os.path.isfile('weights.pt'):
 #     print("Downloaded files!")
 
 from detections import get_plates_from_image
-get_plates_from_image('image.jpg')
+from PIL import Image
+import numpy as np
+image = Image.open('image.jpg')
+image = np.array(image)
+img = get_plates_from_image(image)
 print("Downloaded and loaded all files!")
