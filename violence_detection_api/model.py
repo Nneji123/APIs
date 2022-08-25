@@ -7,17 +7,17 @@ def classify_image(inp):
     prediction = model_0.predict(inp)
     output  = ""
     if prediction[0][prediction.argmax()] < 0.84:
-      output = "good image"
+      output = "Good Image."
     elif prediction.argmax() == 0:
-      output = "Rifle violence"
+      output = "Rifle Violence!"
     elif prediction.argmax() == 1:
-      output = "guns violence"
+      output = "Guns Violence!"
     elif prediction.argmax() == 2:
-      output = "knife violence"
+      output = "Knife Violence!"
     elif prediction.argmax() == 3:
-      output = "image porno"
+      output = "Pornographic Image!"
     elif prediction.argmax() == 4:
-      output = "personne habillée" 
+      output = "Normal Person." 
     else:
-      output = "tank violence" 
+      output = "Tank Violence!" 
     return output
