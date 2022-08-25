@@ -14,18 +14,19 @@ def draw_boxes(image, bounds, color='yellow', width=2):
 
 
 def get_text(image, lang):
-    reader = easyocr.Reader(lang)
-    bounds = reader.readtext(image.name)
+    reader = easyocr.Reader([lang])
+    bounds = reader.readtext(image)
     vals = pd.DataFrame(bounds).iloc[:, 1:]
     vals = pd.DataFrame.to_json(vals)
     return vals
 
 
 def inference(img, lang):
-    reader = easyocr.Reader(lang)
-    bounds = reader.readtext(img.name)
-    im = Image.open(img.name)
+    reader = easyocr.Reader([lang])
+    bounds = reader.readtext(img)
+    im = Image.open(img)
     draw_boxes(im, bounds)
+    im.save('output.jpg')
     # im.save('result.jpg')
     # return ['result.jpg', pd.DataFrame(bounds).iloc[:, 1:]]
 

@@ -36,29 +36,27 @@ async def home():
     return note
 
 
-# endpoint for just enhancing the image
 @app.post("/ocr")
-async def get_ocr_image(file: UploadFile = File(...), lang: str = "eng"):
+async def get_ocr_image(file: UploadFile = File(...), lang: str = "en"):
 
     contents = io.BytesIO(await file.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     cv2.imwrite("image.jpg", img)
     try:
-        image = Image.open("image.jpg")
-        images = inference(image, lang)
-        cv2.imwrite("output.jpg", images)
+        #image = Image.open("image.jpg")
+        images = inference("image.jpg", lang)
+        #cv2.imwrite("output.jpg", images)
         print("Making prediction...")
         return FileResponse("output.jpg", media_type="image/jpg")
-    except ValueError:
+    except:
         vals = "Error! Please upload a valid image type."
         return vals
 
-# endpoint for just enhancing the image
 
 
-@app.post("/ocr")
-async def get_ocr_image(file: UploadFile = File(...), lang: str = "eng"):
+@app.post("/text-ocr")
+async def get_text_ocr_image(file: UploadFile = File(...), lang: str = "en") -> dict:
 
     contents = io.BytesIO(await file.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
@@ -66,10 +64,10 @@ async def get_ocr_image(file: UploadFile = File(...), lang: str = "eng"):
     cv2.imwrite("image.jpg", img)
     try:
         image = Image.open("image.jpg")
-        images = inference(image, lang)
-        cv2.imwrite("output.jpg", images)
-        print("Making prediction...")
-        return FileResponse("output.jpg", media_type="image/jpg")
+        text = get_text(image, lang)
+        # cv2.imwrite("output.jpg", images)
+        # print("Making prediction...")
+        return text
     except ValueError:
         vals = "Error! Please upload a valid image type."
         return vals
