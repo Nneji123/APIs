@@ -138,3 +138,6 @@ conceptual_weights.pt
 bestmodel.h5
 final.m
 classifier_model.onnx
+traced_model.pt
+weights.pt
+examples/

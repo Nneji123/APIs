@@ -47,7 +47,9 @@ async def detect_plate(file: UploadFile = File(...)):
     cv2.imwrite("image.jpg", img)
     try:
         image = Image.open('image.jpg')
-        images = get_plates_from_image(image)
+        image = np.array(image)
+        img = get_plates_from_image(image)
+        images = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         print("Detecting plates from image...")
         cv2.imwrite("output.jpg", images)
         return FileResponse("output.jpg", media_type="image/jpg")
