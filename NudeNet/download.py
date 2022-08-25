@@ -5,7 +5,8 @@ from nudenet import NudeClassifier
 classifier = NudeClassifier()
 
 # Classify single image
-classifier.classify('test6.jpg')
+classifier.classify('image.jpg')
+print("Downloaded Model!")
 # Returns {'path_to_image_1': {'safe': PROBABILITY, 'unsafe': PROBABILITY}}
 # Classify multiple images (batch prediction)
 # batch_size is optional; defaults to 4
