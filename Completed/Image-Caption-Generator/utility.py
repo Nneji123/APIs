@@ -1,14 +1,13 @@
-#Generate Captions for a Fresh Image
+# Generate Captions for a Fresh Image
 
 from pickle import load
-from numpy import argmax
+
+from keras.applications.vgg16 import VGG16, preprocess_input
+from keras.models import Model, load_model
+from keras.preprocessing.image import img_to_array, load_img
 from keras.preprocessing.sequence import pad_sequences
-from keras.applications.vgg16 import VGG16
-from keras.preprocessing.image import load_img
-from keras.preprocessing.image import img_to_array
-from keras.applications.vgg16 import preprocess_input
-from keras.models import Model
-from keras.models import load_model
+from numpy import argmax
+
 
 # map an integer to a word
 def word_for_id(integer, tokenizer):
@@ -17,10 +16,11 @@ def word_for_id(integer, tokenizer):
             return word
     return None
 
+
 # generate a description for an image
 def generate_desc(model, tokenizer, photo, max_length):
     # seed the generation process
-    in_text = 'startseq'
+    in_text = "startseq"
     # iterate over the whole length of the sequence
     for i in range(max_length):
         # integer encode input sequence
@@ -28,7 +28,7 @@ def generate_desc(model, tokenizer, photo, max_length):
         # pad input
         sequence = pad_sequences([sequence], maxlen=max_length)
         # predict next word
-        yhat = model.predict([photo,sequence], verbose=0)
+        yhat = model.predict([photo, sequence], verbose=0)
         # convert probability to integer
         yhat = argmax(yhat)
         # map integer to word
@@ -37,11 +37,12 @@ def generate_desc(model, tokenizer, photo, max_length):
         if word is None:
             break
         # append as input for generating the next word
-        in_text += ' ' + word
+        in_text += " " + word
         # stop if we predict the end of the sequence
-        if word == 'endseq':
+        if word == "endseq":
             break
     return in_text
+
 
 # extract features from each photo in the directory
 def extract_feature(filename):
@@ -62,9 +63,10 @@ def extract_feature(filename):
     feature = model.predict(image, verbose=0)
     return feature
 
+
 def caption(test):
-    tokenizer = load(open('model/tokenizer.pkl', 'rb'))
-    model = load_model('model/model.h5')
+    tokenizer = load(open("model/tokenizer.pkl", "rb"))
+    model = load_model("model/model.h5")
     max_length = 34
     photo = extract_feature(test)
     description = generate_desc(model, tokenizer, photo, max_length)

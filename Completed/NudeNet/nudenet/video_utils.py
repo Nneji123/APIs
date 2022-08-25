@@ -1,10 +1,10 @@
-import cv2
-import os
 import logging
+import os
+
+import cv2
+from skimage import metrics as skimage_metrics
 
 # logging.basicConfig(level=logging.DEBUG)
-
-from skimage import metrics as skimage_metrics
 
 
 def is_similar_frame(f1, f2, resize_to=(64, 64), thresh=0.5, return_score=False):

@@ -28,6 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/", response_class=PlainTextResponse, tags=["home"])
 async def home():
     note = """
@@ -48,7 +49,7 @@ async def generate_caption(file: UploadFile = File(...)):
     try:
         image = cv2.imread("image.jpg")
         images = description = caption("image.jpg")
-        #cv2.imwrite("output.jpg", images)
+        # cv2.imwrite("output.jpg", images)
         return images
     except ValueError:
         vals = "Error! Please upload a valid image type."

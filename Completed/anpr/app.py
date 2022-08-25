@@ -4,11 +4,11 @@ import sys
 
 import cv2
 import numpy as np
+from detections import get_plates_from_image
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
 from PIL import Image
-from detections import get_plates_from_image
 
 sys.path.append(os.path.abspath(os.path.join("..", "config")))
 
@@ -28,6 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/", response_class=PlainTextResponse, tags=["home"])
 async def home():
     note = """
@@ -46,7 +47,7 @@ async def detect_plate(file: UploadFile = File(...)):
     img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     cv2.imwrite("image.jpg", img)
     try:
-        image = Image.open('image.jpg')
+        image = Image.open("image.jpg")
         image = np.array(image)
         img = get_plates_from_image(image)
         images = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)

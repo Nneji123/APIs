@@ -1,11 +1,12 @@
 import os
+
 import cv2
 import numpy as np
 from PIL import Image
 
 
 def read_image_bgr(path):
-    """ Read an image in BGR format.
+    """Read an image in BGR format.
     Args
         path: Path to the image.
     """
@@ -53,7 +54,9 @@ def resize_image(img, min_side=800, max_side=1333):
 
 
 def preprocess_image(
-    image_path, min_side=800, max_side=1333,
+    image_path,
+    min_side=800,
+    max_side=1333,
 ):
     image = read_image_bgr(image_path)
     image = _preprocess_image(image)

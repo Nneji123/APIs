@@ -7,8 +7,8 @@ import numpy as np
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
-from PIL import Image
 from model import classify_image
+from PIL import Image
 
 sys.path.append(os.path.abspath(os.path.join("..", "config")))
 
@@ -27,6 +27,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.get("/", response_class=PlainTextResponse, tags=["home"])
 async def home():

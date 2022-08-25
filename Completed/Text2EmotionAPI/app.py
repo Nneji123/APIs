@@ -2,15 +2,16 @@ import io
 import os
 import sys
 
+import text2emotion as te
 from fastapi import FastAPI, File, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
 from pydantic import BaseModel
-import text2emotion as te
 
 sys.path.append(os.path.abspath(os.path.join("..", "config")))
 import nltk
-nltk.download('omw-1.4')
+
+nltk.download("omw-1.4")
 
 app = FastAPI(
     title="Text2Emotion API",
@@ -27,6 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/", response_class=PlainTextResponse, tags=["home"])
 async def home():
     note = """
@@ -38,6 +40,7 @@ async def home():
 
 class Emotion(BaseModel):
     doc: str
+
 
 # endpoint for just enhancing the image
 @app.post("/emotion")

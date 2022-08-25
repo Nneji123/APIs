@@ -141,3 +141,4 @@ classifier_model.onnx
 traced_model.pt
 weights.pt
 examples/
+*.pth

@@ -1,17 +1,21 @@
-import os
-import cv2
-import tarfile
-import gdown
 import logging
+import os
+import tarfile
+
+import cv2
+import gdown
 import numpy as np
 import onnxruntime
-from .video_utils import get_interest_frames_from_video
-from .image_utils import load_images
 from PIL import Image as pil_image
+
+from .image_utils import load_images
+from .video_utils import get_interest_frames_from_video
+
 
 def url_to_id(url):
     x = url.split("/")
     return x[5]
+
 
 class Classifier:
     """
@@ -26,19 +30,19 @@ class Classifier:
         model = Classifier()
         """
 
-        
-        id = url_to_id('https://drive.google.com/file/d/1VM3eKVT2Ik1G-H0xsKOGj3h6L00rga_R/view?usp=sharing')
-        url = 'https://drive.google.com/uc?id='+id
-        output = 'classifier_model.onnx'
-    
+        id = url_to_id(
+            "https://drive.google.com/file/d/1VM3eKVT2Ik1G-H0xsKOGj3h6L00rga_R/view?usp=sharing"
+        )
+        url = "https://drive.google.com/uc?id=" + id
+        output = "classifier_model.onnx"
 
-        if os.path.exists('classifier_model.onnx'):
+        if os.path.exists("classifier_model.onnx"):
             pass
         else:
             print("Downloading the model...")
             gdown.download(url, output, quiet=False)
 
-        self.nsfw_model = onnxruntime.InferenceSession('classifier_model.onnx')
+        self.nsfw_model = onnxruntime.InferenceSession("classifier_model.onnx")
 
     def classify_video(
         self,

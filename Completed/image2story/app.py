@@ -2,16 +2,17 @@ import io
 import os
 import sys
 import time
+import warnings
 
 import cv2
 import numpy as np
-from prefix_clip import download_pretrained_model, generate_caption
-from gpt2_story_gen import generate_story
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import PlainTextResponse
+from gpt2_story_gen import generate_story
 from PIL import Image
+from prefix_clip import download_pretrained_model, generate_caption
 from pydantic import BaseModel
-import warnings
+
 warnings.filterwarnings("ignore")
 
 sys.path.append(os.path.abspath(os.path.join("..", "config")))
@@ -31,10 +32,12 @@ async def home():
     """
     return note
 
+
 @app.get("/username", response_class=PlainTextResponse, tags=["home"])
 async def get_username(username: str):
-    
+
     return username
+
 
 class GenerateStory(BaseModel):
     model: str
@@ -45,10 +48,10 @@ class GenerateStory(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "model" : "coco",
+                "model": "coco",
                 "genre": "superhero",
-                "n_stories" :1,
-                "use_beam_search":False
+                "n_stories": 1,
+                "use_beam_search": False,
             }
         }
 
@@ -58,19 +61,15 @@ class GenerateCaption(BaseModel):
     use_beam_search: bool
 
     class Config:
-        schema_extra = {
-            "example": {
-                "model" : "coco",
-                "use_beam_search":False
-            }
-        }
+        schema_extra = {"example": {"model": "coco", "use_beam_search": False}}
 
-coco_weights = 'coco_weights.pt'
-conceptual_weights = 'conceptual_weights.pt'
+
+coco_weights = "coco_weights.pt"
+conceptual_weights = "conceptual_weights.pt"
 
 
 @app.post("/upload-and-save-image/{username}")
-async def upload_save_image(username:str, file: UploadFile = File(...)):
+async def upload_save_image(username: str, file: UploadFile = File(...)):
     contents = io.BytesIO(await file.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
@@ -83,12 +82,16 @@ async def upload_save_image(username:str, file: UploadFile = File(...)):
         return "Upload Successful!"
 
 
-@app.post("/generate-caption/{username}", response_class=PlainTextResponse, description="You can select the genre e.g sci_fi, action, drama, horror, thriller. Models: coco, conceptual")
-async def generate_cap(username:str, data: GenerateCaption):
+@app.post(
+    "/generate-caption/{username}",
+    response_class=PlainTextResponse,
+    description="You can select the genre e.g sci_fi, action, drama, horror, thriller. Models: coco, conceptual",
+)
+async def generate_cap(username: str, data: GenerateCaption):
     try:
-        if data.model.lower()=='coco':
+        if data.model.lower() == "coco":
             model_file = coco_weights
-        elif data.model.lower()=='conceptual':
+        elif data.model.lower() == "conceptual":
             model_file = conceptual_weights
         pil_image = Image.open(f"./{username}/image.jpg")
         image_caption = generate_caption(
@@ -104,13 +107,16 @@ async def generate_cap(username:str, data: GenerateCaption):
         return "Please upload an image!"
 
 
-
-@app.post("/generate-story/{username}", response_class=PlainTextResponse, description="You can select the genre e.g sci_fi, action, drama, horror, thriller. Models: coco, conceptual")
-async def generate_storys(username:str, data: GenerateStory):
+@app.post(
+    "/generate-story/{username}",
+    response_class=PlainTextResponse,
+    description="You can select the genre e.g sci_fi, action, drama, horror, thriller. Models: coco, conceptual",
+)
+async def generate_storys(username: str, data: GenerateStory):
     try:
-        if data.model.lower()=='coco':
+        if data.model.lower() == "coco":
             model_file = coco_weights
-        elif data.model.lower()=='conceptual':
+        elif data.model.lower() == "conceptual":
             model_file = conceptual_weights
         pil_image = Image.open(f"./{username}/image.jpg")
         image_caption = generate_caption(
@@ -118,7 +124,9 @@ async def generate_storys(username:str, data: GenerateStory):
             pil_image=pil_image,
             use_beam_search=data.use_beam_search,
         )
-        story = generate_story(image_caption, pil_image, data.genre.lower(), data.n_stories)
+        story = generate_story(
+            image_caption, pil_image, data.genre.lower(), data.n_stories
+        )
         time.sleep(1)
         os.system(f"rm -rf {username}")
         return story

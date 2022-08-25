@@ -1,16 +1,13 @@
+from typing import List, Optional, Tuple, Union
+
 import clip
-from torch import nn
+import gdown
 import numpy as np
 import torch
 import torch.nn.functional as nnf
-import gdown
-from typing import Tuple, List, Union, Optional
-from transformers import (
-    GPT2Tokenizer,
-    GPT2LMHeadModel,
-)
+from torch import nn
 from tqdm import trange
-
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
 N = type(None)
 V = np.array
@@ -270,4 +267,3 @@ def generate_caption(model_path, pil_image, use_beam_search):
         image_caption = generate2(model, tokenizer, embed=prefix_embed)
 
     return image_caption
-

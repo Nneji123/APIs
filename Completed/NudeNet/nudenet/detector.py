@@ -1,9 +1,10 @@
-import os
-import cv2
-import pydload
 import logging
+import os
+
+import cv2
 import numpy as np
 import onnxruntime
+import pydload
 from progressbar import progressbar
 
 from .detector_utils import preprocess_image

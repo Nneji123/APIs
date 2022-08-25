@@ -1,23 +1,24 @@
 import tensorflow as tf
-model_0 = tf.keras.models.load_model('bestmodel.h5')
+
+model_0 = tf.keras.models.load_model("bestmodel.h5")
 
 
 def classify_image(inp):
     inp = inp.reshape((-1, 224, 224, 3))
     prediction = model_0.predict(inp)
-    output  = ""
+    output = ""
     if prediction[0][prediction.argmax()] < 0.84:
-      output = "Good Image."
+        output = "Good Image."
     elif prediction.argmax() == 0:
-      output = "Rifle Violence!"
+        output = "Rifle Violence!"
     elif prediction.argmax() == 1:
-      output = "Guns Violence!"
+        output = "Guns Violence!"
     elif prediction.argmax() == 2:
-      output = "Knife Violence!"
+        output = "Knife Violence!"
     elif prediction.argmax() == 3:
-      output = "Pornographic Image!"
+        output = "Pornographic Image!"
     elif prediction.argmax() == 4:
-      output = "Normal Person." 
+        output = "Normal Person."
     else:
-      output = "Tank Violence!" 
+        output = "Tank Violence!"
     return output

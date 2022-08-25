@@ -1,10 +1,10 @@
-import os
 import io
-import cv2
-import pydload
 import logging
-import numpy as np
+import os
 
+import cv2
+import numpy as np
+import pydload
 from PIL import Image as pil_image
 
 if pil_image is not None:
@@ -27,7 +27,7 @@ def load_img(
     path, grayscale=False, color_mode="rgb", target_size=None, interpolation="nearest"
 ):
     """Loads an image into PIL format.
-    
+
     :param path: Path to image file.
     :param grayscale: DEPRECATED use `color_mode="grayscale"`.
     :param color_mode: One of "grayscale", "rgb", "rgba". Default: "rgb".
@@ -40,7 +40,7 @@ def load_img(
         If PIL version 1.1.3 or newer is installed, "lanczos" is also
         supported. If PIL version 3.4.0 or newer is installed, "box" and
         "hamming" are also supported. By default, "nearest" is used.
-    
+
     :return: A PIL Image instance.
     """
     if grayscale is True:
@@ -120,11 +120,11 @@ def load_images(image_paths, image_size, image_names):
     inputs:
         image_paths: list of image paths to load
         image_size: size into which images should be resized
-    
+
     outputs:
         loaded_images: loaded images on which keras model can run predictions
         loaded_image_indexes: paths of images which the function is able to process
-    
+
     """
     loaded_images = []
     loaded_image_paths = []

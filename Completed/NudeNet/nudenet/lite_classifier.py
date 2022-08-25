@@ -1,7 +1,8 @@
 import os
+
 import cv2
-import pydload
 import numpy as np
+import pydload
 
 from .image_utils import load_images
 

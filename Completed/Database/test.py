@@ -1,9 +1,8 @@
 import pytest
+from app import Hero, app, get_session
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
-
-from app import Hero, app, get_session
 
 
 @pytest.fixture(name="session")

@@ -1,13 +1,13 @@
 import io
 import os
 import time
-import numpy as np
-import cv2
 
+import cv2
+import numpy as np
+from colorizer import colorization
 from fastapi import FastAPI, File, Response, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse, StreamingResponse
-from colorizer import colorization
 
 app = FastAPI(
     title="Image Colorizer API",
@@ -45,9 +45,9 @@ async def face_pixelize(file: UploadFile = File(...)):
     img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     cv2.imwrite("image.jpg", img)
     try:
-        image = 'image.jpg'
+        image = "image.jpg"
         images = colorization(image)
-        #cv2.imwrite("out.jpg", images)
+        # cv2.imwrite("out.jpg", images)
         return FileResponse("output.jpg", media_type="image/jpg")
     except ValueError:
         vals = "Error! Please upload a valid image type."
