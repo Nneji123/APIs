@@ -48,6 +48,7 @@ async def detect_plate(file: UploadFile = File(...)):
     try:
         image = Image.open('image.jpg')
         images = get_plates_from_image(image)
+        print("Detecting plates from image...")
         cv2.imwrite("output.jpg", images)
         return FileResponse("output.jpg", media_type="image/jpg")
     except ValueError:
