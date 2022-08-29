@@ -44,12 +44,10 @@ async def get_ocr_image(file: UploadFile = File(...), lang: str = "en"):
     img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     cv2.imwrite("image.jpg", img)
     try:
-        #image = Image.open("image.jpg")
-        images = inference("image.jpg", lang)
-        #cv2.imwrite("output.jpg", images)
+        inference("image.jpg", lang)
         print("Making prediction...")
         return FileResponse("output.jpg", media_type="image/jpg")
-    except:
+    except ValueError:
         vals = "Error! Please upload a valid image type."
         return vals
 
