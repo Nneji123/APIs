@@ -22,7 +22,7 @@ def image_preprocess(image, target_size, gt_boxes=None):
 
     image_padded = np.full(shape=[ih, iw, 3], fill_value=128.0)
     dw, dh = (iw - nw) // 2, (ih - nh) // 2
-    image_padded[dh : nh + dh, dw : nw + dw, :] = image_resized
+    image_padded[dh: nh + dh, dw: nw + dw, :] = image_resized
     image_padded = image_padded / 255.0
 
     if gt_boxes is None:
@@ -123,7 +123,8 @@ def postprocess_boxes(pred_bbox, org_img_shape, input_size, score_threshold):
         axis=-1,
     )
     invalid_mask = np.logical_or(
-        (pred_coor[:, 0] > pred_coor[:, 2]), (pred_coor[:, 1] > pred_coor[:, 3])
+        (pred_coor[:, 0] > pred_coor[:, 2]
+         ), (pred_coor[:, 1] > pred_coor[:, 3])
     )
     pred_coor[invalid_mask] = 0
 
@@ -152,8 +153,10 @@ def bboxes_iou(boxes1, boxes2):
     boxes1 = np.array(boxes1)
     boxes2 = np.array(boxes2)
 
-    boxes1_area = (boxes1[..., 2] - boxes1[..., 0]) * (boxes1[..., 3] - boxes1[..., 1])
-    boxes2_area = (boxes2[..., 2] - boxes2[..., 0]) * (boxes2[..., 3] - boxes2[..., 1])
+    boxes1_area = (boxes1[..., 2] - boxes1[..., 0]) * \
+        (boxes1[..., 3] - boxes1[..., 1])
+    boxes2_area = (boxes2[..., 2] - boxes2[..., 0]) * \
+        (boxes2[..., 3] - boxes2[..., 1])
 
     left_up = np.maximum(boxes1[..., :2], boxes2[..., :2])
     right_down = np.minimum(boxes1[..., 2:], boxes2[..., 2:])
@@ -185,7 +188,7 @@ def nms(bboxes, iou_threshold, sigma=0.3, method="nms"):
             best_bbox = cls_bboxes[max_ind]
             best_bboxes.append(best_bbox)
             cls_bboxes = np.concatenate(
-                [cls_bboxes[:max_ind], cls_bboxes[max_ind + 1 :]]
+                [cls_bboxes[:max_ind], cls_bboxes[max_ind + 1:]]
             )
             iou = bboxes_iou(best_bbox[np.newaxis, :4], cls_bboxes[:, :4])
             weight = np.ones((len(iou),), dtype=np.float32)
@@ -224,10 +227,12 @@ def draw_bbox(
 
     num_classes = len(classes)
     image_h, image_w, _ = image.shape
-    hsv_tuples = [(1.0 * x / num_classes, 1.0, 1.0) for x in range(num_classes)]
+    hsv_tuples = [(1.0 * x / num_classes, 1.0, 1.0)
+                  for x in range(num_classes)]
     colors = list(map(lambda x: colorsys.hsv_to_rgb(*x), hsv_tuples))
     colors = list(
-        map(lambda x: (int(x[0] * 255), int(x[1] * 255), int(x[2] * 255)), colors)
+        map(lambda x: (int(x[0] * 255),
+            int(x[1] * 255), int(x[2] * 255)), colors)
     )
 
     random.seed(0)
@@ -250,7 +255,8 @@ def draw_bbox(
                 bbox_mess, 0, fontScale, thickness=bbox_thick // 2
             )[0]
             cv2.rectangle(
-                image, c1, (c1[0] + t_size[0], c1[1] - t_size[1] - 3), bbox_color, -1
+                image, c1, (c1[0] + t_size[0], c1[1] -
+                            t_size[1] - 3), bbox_color, -1
             )
             cv2.putText(
                 image,
@@ -266,15 +272,49 @@ def draw_bbox(
     return image
 
 
-# ANCHORS = "models/anchors.txt"
-# STRIDES = [8, 16, 32]
-# XYSCALE = [1.2, 1.1, 1.05]
+def get_class_labels(bboxes, classes=read_class_names("models/coco.names")):
 
-# ANCHORS = get_anchors(ANCHORS)
-# STRIDES = np.array(STRIDES)
+    for i, bbox in enumerate(bboxes):
+        score = bbox[4]
+        class_ind = int(bbox[5])
 
-# pred_bbox = postprocess_bbbox(detections, ANCHORS, STRIDES, XYSCALE)
-# bboxes = postprocess_boxes(pred_bbox, original_image_size, input_size, 0.25)
-# bboxes = nms(bboxes, 0.213, method='nms')
-# image = draw_bbox(original_image, bboxes)
-# cv2.imwrite("outpiut.jpg",image)
+        # store class label and score for each bounding box in a list
+        mylist = [classes[class_ind], score]
+        mysecondlist = []
+        for lists in mylist:
+            mysecondlist.append(lists)
+        print(mysecondlist)
+
+    # return class_labels_all
+input_size = 416
+original_image = cv2.imread("image.jpg")
+# original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
+original_image_size = original_image.shape[:2]
+
+image_data = image_preprocess(np.copy(original_image), [
+    input_size, input_size])
+image_data = image_data[np.newaxis, ...].astype(np.float32)
+sess = rt.InferenceSession("models/model.onnx")
+
+outputs = sess.get_outputs()
+output_names = list(map(lambda output: output.name, outputs))
+input_name = sess.get_inputs()[0].name
+
+detections = sess.run(output_names, {input_name: image_data})
+print("Output shape:", list(
+    map(lambda detection: detection.shape, detections)))
+
+
+ANCHORS = "models/anchors.txt"
+STRIDES = [8, 16, 32]
+XYSCALE = [1.2, 1.1, 1.05]
+
+ANCHORS = get_anchors(ANCHORS)
+STRIDES = np.array(STRIDES)
+
+pred_bbox = postprocess_bbbox(detections, ANCHORS, STRIDES, XYSCALE)
+bboxes = postprocess_boxes(
+    pred_bbox, original_image_size, input_size, 0.25)
+bboxes = nms(bboxes, 0.213, method="nms")
+image = get_class_labels(original_image, bboxes)
+print(image)
