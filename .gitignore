@@ -142,3 +142,4 @@ traced_model.pt
 weights.pt
 examples/
 *.pth
+FasterRCNN-10.onnx
