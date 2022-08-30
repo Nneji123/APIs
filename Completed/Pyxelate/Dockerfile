@@ -2,6 +2,8 @@ FROM python:3.8.13-slim-bullseye
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y git
+
 RUN pip install --upgrade setuptools 
 
 COPY . .
