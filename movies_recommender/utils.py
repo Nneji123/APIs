@@ -49,7 +49,3 @@ def get_suggestions(sorted_similar_movies):
 def check(enter_movie_name):
     mvs = check_movie(enter_movie_name)
     return mvs
-
-
-# movie = gr.Interface(fn=check, inputs="text", outputs="text")
-# movie.launch(share=True)
