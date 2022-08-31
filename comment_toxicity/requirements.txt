@@ -1,0 +1,2 @@
+fastapi[all]
+nltk==3.7

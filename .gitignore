@@ -143,3 +143,5 @@ weights.pt
 examples/
 *.pth
 FasterRCNN-10.onnx
+comment_tokenizer.pkl
+comment_toxicity_model.h5
