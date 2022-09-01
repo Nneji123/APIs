@@ -1,9 +1,0 @@
-numpy
-watchdog
-transformers
-sentencepiece
-sentence-transformers
-pandas
-gensim
-sklearn
-stqdm
