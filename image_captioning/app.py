@@ -10,7 +10,6 @@ from fastapi.responses import FileResponse, PlainTextResponse
 from PIL import Image
 from myfunc import image_caption
 
-sys.path.append(os.path.abspath(os.path.join("..", "config")))
 
 
 app = FastAPI(

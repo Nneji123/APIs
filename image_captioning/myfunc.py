@@ -1,10 +1,4 @@
 # author : LiHE
-import os
-
-# os.system('cd fairseq;'
-#           'pip install --use-feature=2020-resolver ./; cd ..')
-# os.system('ls -l')
-
 import torch
 import numpy as np
 from fairseq import utils, tasks
@@ -109,16 +103,3 @@ def image_caption(Image):
     with torch.no_grad():
         result, scores = eval_step(task, generator, models, sample)
     return result[0]['caption']
-
-
-# title = "eRupt e-Commerce Image Captioning"
-# description = "Online Demo for e-Commerce Image Captioning. Upload your own image or click any one of the examples, and click " \
-#               "\"Submit\" and then wait for the generated caption.  "
-# article = "<p style='text-align: center'><a href='https://github.com/heli510' target='_blank'>LIHE Github " \
-#           "Repo</a></p> "
-# examples = [['0001.jpg'], ['0002.jpg'], ['0003.jpg'], ['0004.jpg'], ['0005.jpg']]
-# io = gr.Interface(fn=image_caption, inputs=gr.inputs.Image(type='pil'), outputs=gr.outputs.Textbox(label="Caption"),
-#                   title=title, description=description, article=article, examples=examples,
-#                   allow_flagging=False, allow_screenshot=False)
-# #io.launch(cache_examples=True)
-# io.launch()

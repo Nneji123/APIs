@@ -145,3 +145,4 @@ examples/
 FasterRCNN-10.onnx
 comment_tokenizer.pkl
 comment_toxicity_model.h5
+caption.pt
