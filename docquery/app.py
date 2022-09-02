@@ -4,15 +4,13 @@ import os
 import cv2
 from PIL import Image
 import numpy as np
-from fastapi import FastAPI, File, UploadFile, Response
+from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
 from utils import process_question, load_document, process_question_image
 from pdf2image.exceptions import (PDFInfoNotInstalledError, PDFPageCountError,
                                   PDFSyntaxError)
-from pydantic import BaseModel
 
-#print(process_question("What is the job description?", load_document("filename.pdf")))
 
 app = FastAPI(
     title="Document Query API",
@@ -43,6 +41,10 @@ async def home():
     """
     return note
 
+def delete_file(file_path):
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
 
 @app.post("/query-document", tags=["query"])
 async def get_document(type_of_response:str, question:str, file: UploadFile = File(...), ):
@@ -58,8 +60,8 @@ async def get_document(type_of_response:str, question:str, file: UploadFile = Fi
             return FileResponse("output.jpg", media_type="image/jpg")
         elif type_of_response == "text":
             return data
-        if os.path.exists("filename.pdf"):
-            os.remove("filename.pdf", "output.jpg")
+        delete_file("filename.pdf")
+        delete_file("output.jpg")
     except (PDFInfoNotInstalledError, PDFPageCountError,
                                   PDFSyntaxError) as e:
         e = "Unable to parse document! Please upload a valid PDF file."
@@ -80,10 +82,9 @@ async def get_image(type_of_response:str, question:str, file: UploadFile = File(
             return FileResponse("output.jpg", media_type="image/jpg")
         elif type_of_response == "text":
             return data
-        if os.path.exists("output.jpg"):
-            os.remove("output.jpg", "images.jpg")
-            print("removed")
-    except (ValueError) as e:
+        delete_file("images.jpg")
+        delete_file("output.jpg")
+    except ValueError as e:
         e = "Error! Please upload a valid image type."
         return e
     

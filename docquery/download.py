@@ -11,9 +11,10 @@ def construct_pipeline(model):
     if model in PIPELINES:
         return PIPELINES[model]
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = "cpu"
     ret = get_pipeline(checkpoint=CHECKPOINTS[model], device=device)
     PIPELINES[model] = ret
     return ret
 
 construct_pipeline(model=list(CHECKPOINTS.keys())[0])
+print("Model Downloaded!")
