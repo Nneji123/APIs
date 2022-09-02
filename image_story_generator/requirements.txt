@@ -2,5 +2,6 @@ Pillow==9.2.0
 transformers==4.21.2
 fastapi[all]
 tensorflow-cpu==2.2.0
-numpy==1.23.2
+numpy==1.19.5
 opencv_python_headless==4.5.3.56
+protobuf==3.20.0

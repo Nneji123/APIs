@@ -1,12 +1,13 @@
 import io
+import os
 
 import cv2
 import numpy as np
 from PIL import Image
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, PlainTextResponse
-from utils import self_caption
+from fastapi.responses import PlainTextResponse
+from utils import self_caption, classify_image
 
 
 app = FastAPI(
@@ -35,23 +36,8 @@ async def home():
     return note
 
 
-# @app.post("/generate", response_class=PlainTextResponse, tags=["generate"])
-# async def get_document(file: UploadFile = File(...)):
-#     files = await file.read()
-#     # save the file
-#     filename = "filename.pdf"
-#     with open(filename, "wb+") as f:
-#         f.write(files)
-#     # open the file and return the file name
-#     try:
-#         data = convert_pdf("filename.pdf")
-#         return data
-#     except (PDFInfoNotInstalledError, PDFPageCountError,
-#                                   PDFSyntaxError) as e:
-#         return "Unable to parse document! Please upload a valid PDF file."
-
 @app.post("/caption-image")
-async def get_image(file: UploadFile = File(...)):
+async def get_image(response_options:str, file: UploadFile = File(...)):
 
     contents = io.BytesIO(await file.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
@@ -59,8 +45,16 @@ async def get_image(file: UploadFile = File(...)):
     cv2.imwrite("images.jpg", img)
     try:
         image = Image.open("images.jpg")
-        data = self_caption(image)
-        return data
+        if response_options == "caption":
+            data = self_caption(image)
+            if os.path.exists("images.jpg"):
+                os.remove("images.jpg")
+            return data
+        elif response_options == "classify":
+            data = classify_image(image)
+            if os.path.exists("images.jpg"):
+                os.remove("images.jpg")
+            return data
     except ValueError as e:
         e = "Error! Please upload a valid image type."
         return e 
