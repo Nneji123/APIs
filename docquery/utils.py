@@ -1,12 +1,10 @@
 import os
-import sys
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 from PIL import Image, ImageDraw
 import traceback
 
 
-import torch
 from docquery.pipeline import get_pipeline
 from docquery.document import load_document, ImageDocument
 
@@ -30,7 +28,7 @@ def construct_pipeline(model):
     if model in PIPELINES:
         return PIPELINES[model]
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = "cpu"
     ret = get_pipeline(checkpoint=CHECKPOINTS[model], device=device)
     PIPELINES[model] = ret
     return ret
