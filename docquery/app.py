@@ -2,11 +2,12 @@ import io
 import os
 
 import cv2
+from PIL import Image
 import numpy as np
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
-from utils import process_question, load_document
+from utils import process_question, load_document, process_question_image
 from pdf2image.exceptions import (PDFInfoNotInstalledError, PDFPageCountError,
                                   PDFSyntaxError)
 from pydantic import BaseModel
@@ -28,9 +29,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class Query(BaseModel):
-    query: str
-    #image: bytes
+# class Query(BaseModel):
+#     query: str
+#     #image: bytes
 
 
 @app.get("/", response_class=PlainTextResponse, tags=["home"])
@@ -43,8 +44,8 @@ async def home():
     return note
 
 
-@app.post("/query-document")
-async def get_document(data:Query, file: UploadFile = File(...)):
+@app.post("/query-document", tags=["query"])
+async def get_document(type_of_response:str, question:str, file: UploadFile = File(...), ):
     files = await file.read()
     # save the file
     filename = "filename.pdf"
@@ -52,22 +53,37 @@ async def get_document(data:Query, file: UploadFile = File(...)):
         f.write(files)
     # open the file and return the file name
     try:
-        data = process_question(data.query, load_document("filename.pdf"))
-        return data, F
+        data = process_question(question, load_document("filename.pdf"))
+        if type_of_response == "image":
+            return FileResponse("output.jpg", media_type="image/jpg")
+        elif type_of_response == "text":
+            return data
+        if os.path.exists("filename.pdf"):
+            os.remove("filename.pdf", "output.jpg")
     except (PDFInfoNotInstalledError, PDFPageCountError,
                                   PDFSyntaxError) as e:
-        return "Unable to parse document! Please upload a valid PDF file."
+        e = "Unable to parse document! Please upload a valid PDF file."
+        return e
 
-@app.post("/query-image")
-async def get_image(file: UploadFile = File(...)):
+@app.post("/query-image", tags=["query image"])
+async def get_image(type_of_response:str, question:str, file: UploadFile = File(...)):
 
     contents = io.BytesIO(await file.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     cv2.imwrite("images.jpg", img)
     try:
-        data = classify_image("images.jpg")
-        return data
+        im = Image.open("images.jpg")
+        image = np.asarray(im)
+        data = process_question_image(image, question)
+        if type_of_response == "image":
+            return FileResponse("output.jpg", media_type="image/jpg")
+        elif type_of_response == "text":
+            return data
+        if os.path.exists("output.jpg"):
+            os.remove("output.jpg", "images.jpg")
+            print("removed")
     except (ValueError) as e:
-        vals = "Error! Please upload a valid image type."
-        return vals 
+        e = "Error! Please upload a valid image type."
+        return e
+    
