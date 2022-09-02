@@ -6,11 +6,12 @@ import numpy as np
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
-from utils import get_document_answers, get_image_answers
-from pydantic import BaseModel
+from utils import process_question, load_document
 from pdf2image.exceptions import (PDFInfoNotInstalledError, PDFPageCountError,
                                   PDFSyntaxError)
+from pydantic import BaseModel
 
+#print(process_question("What is the job description?", load_document("filename.pdf")))
 
 app = FastAPI(
     title="Document Query API",
@@ -51,8 +52,8 @@ async def get_document(data:Query, file: UploadFile = File(...)):
         f.write(files)
     # open the file and return the file name
     try:
-        data = get_document_answers("filename.pdf", data.query)
-        return data
+        data = process_question(data.query, load_document("filename.pdf"))
+        return data, F
     except (PDFInfoNotInstalledError, PDFPageCountError,
                                   PDFSyntaxError) as e:
         return "Unable to parse document! Please upload a valid PDF file."
