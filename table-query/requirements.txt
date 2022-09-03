@@ -1,0 +1,5 @@
+pandas==1.4.3
+tensorflow-cpu==2.7.0
+fastapi[all]
+transformers==4.13.0
+tensorflow_probability
