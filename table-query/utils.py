@@ -1,3 +1,5 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 from transformers import TapasTokenizer, TFTapasForQuestionAnswering
 import pandas as pd
 import datetime
