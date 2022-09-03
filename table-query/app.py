@@ -1,7 +1,5 @@
-import io
 import os
 
-import numpy as np
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
@@ -43,6 +41,8 @@ async def get_table(question:str, file: UploadFile = File(...)):
     # open the file and return the file name
     try:
         data = execute_query(question, "filename.csv")
+        if os.path.exists("filename.csv"):
+            os.remove("filename.csv")
         return data
     except ValueError as e:
         return {"error": str(e)}

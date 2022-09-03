@@ -6,7 +6,7 @@ import datetime
 def execute_query(query, csv_file):
     a = datetime.datetime.now()
 
-    table = pd.read_csv(csv_file.name, delimiter=",", nrows=64, skip_blank_lines=True)
+    table = pd.read_csv(csv_file, delimiter=",", nrows=64, skip_blank_lines=True)
     table.fillna(0, inplace=True)
     table = table.astype(str)
 
