@@ -31,7 +31,7 @@ async def home():
     return note
 
 
-@app.post("/table-quey", tags=["table-query"])
+@app.post("/table-query", tags=["table-query"])
 async def get_table(question:str, file: UploadFile = File(...)):
     files = await file.read()
     # save the file
@@ -46,3 +46,4 @@ async def get_table(question:str, file: UploadFile = File(...)):
         return data
     except ValueError as e:
         return {"error": str(e)}
+    

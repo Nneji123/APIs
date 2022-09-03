@@ -1,5 +1,5 @@
-pandas==1.4.3
-tensorflow_probability
-tensorflow-cpu
 fastapi[all]
-transformers==4.13.0
+pandas==1.4.3
+tensorflow-cpu==2.9.1
+tensorflow_probability==0.17.0
+transformers==4.21.2
