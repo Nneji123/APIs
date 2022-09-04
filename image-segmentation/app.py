@@ -38,10 +38,7 @@ async def home():
 
 @app.post("/segment-image")
 async def get_image(confidence:int, file: UploadFile = File(...)):
-    if os.path.exists("output.jpg"):
-        os.remove("output.jpg")
-    if os.path.exists("image.jpg"):
-        os.remove("image.jpg")
+
     contents = io.BytesIO(await file.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
@@ -56,4 +53,3 @@ async def get_image(confidence:int, file: UploadFile = File(...)):
         e = "Error! Please upload a valid image type."
         return e 
 
-# "https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-rsb-weights/resnet50_a1_0-14fe96d1.pth" to /root/.cache/torch/hub/checkpoints/resnet50_a1_0-14fe96d1.pth

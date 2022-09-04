@@ -7,8 +7,7 @@ import itertools
 
 import seaborn as sns
 
-#######################################
-# get models from hugging face
+
 feature_extractor = DetrFeatureExtractor.from_pretrained('facebook/detr-resnet-50-panoptic')
 model = DetrForSegmentation.from_pretrained('facebook/detr-resnet-50-panoptic')
 
@@ -36,11 +35,6 @@ def predict_mask(im, confidence=85):
     for lbl in np.unique(label_per_pixel): #enumerate(palette()):
         color_mask[label_per_pixel==lbl,:] = np.asarray(next(palette))*255 #color
 
-    # color_mask = np.zeros(image.size+(3,))
-    # for lbl, color in enumerate(ade_palette()):
-    #     color_mask[label_per_pixel==lbl,:] = color
-
-    # Show image + mask
     pred_img = np.array(image.convert('RGB'))*0.25 + color_mask*0.75
     pred_img = pred_img.astype(np.uint8) 
     pred_img = Image.fromarray(pred_img)
