@@ -1,0 +1,5 @@
+Pillow==9.2.0
+transformers==4.21.2
+fastapi[all]
+opencv_python_headless==4.5.3.56
+protobuf==3.20.0
