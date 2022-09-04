@@ -6,17 +6,16 @@
 import shutil
 import struct
 from functools import lru_cache
+from typing import Union
 
 import numpy as np
 import torch
-from fairseq.dataclass.constants import DATASET_IMPL_CHOICES
 from fairseq.data.fasta_dataset import FastaDataset
+from fairseq.data.huffman import HuffmanMMapIndex, HuffmanMMapIndexedDataset
+from fairseq.dataclass.constants import DATASET_IMPL_CHOICES
 from fairseq.file_io import PathManager
-from fairseq.data.huffman import HuffmanMMapIndexedDataset, HuffmanMMapIndex
 
 from . import FairseqDataset
-
-from typing import Union
 
 
 def best_fitting_int_dtype(
@@ -67,7 +66,9 @@ def make_builder(out_file, impl, vocab_size=None):
     elif impl == "fasta":
         raise NotImplementedError
     elif impl == "huffman":
-        raise ValueError("Use HuffmanCodeBuilder directly as it has a different interface.")
+        raise ValueError(
+            "Use HuffmanCodeBuilder directly as it has a different interface."
+        )
     else:
         return IndexedDatasetBuilder(out_file)
 

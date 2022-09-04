@@ -14,19 +14,16 @@ from typing import List, Optional, Tuple
 
 import torch
 import torch.nn as nn
-from fairseq.models import (
-    FairseqEncoder,
-)
+from fairseq.models import FairseqEncoder
 from fairseq.models.speech_to_text.utils import (
     NoOp,
+    attention_suppression,
+    layer_norm_backward_hook,
     lengths_to_padding_mask,
     segments_to_sequence,
 )
-from fairseq.models.speech_to_text.utils import (
-    attention_suppression,
-    layer_norm_backward_hook,
-)
-from torch import Tensor, device as Device
+from torch import Tensor
+from torch import device as Device
 from torch.quantization.qconfig import (
     default_dynamic_qconfig,
     per_channel_dynamic_qconfig,
@@ -341,7 +338,7 @@ class NoSegAugmentedMemoryMultiheadAttentionBmm(nn.Module):
         self.dropout = dropout
 
         self.head_dim = embed_dim // num_heads
-        self.scaling = self.head_dim ** -0.5
+        self.scaling = self.head_dim**-0.5
 
         self.std_scale = std_scale
         self.use_mem = use_mem

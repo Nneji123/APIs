@@ -1,9 +1,10 @@
-import torch 
-from PIL import Image
-import re 
-from transformers import AutoTokenizer, ViTFeatureExtractor, VisionEncoderDecoderModel 
+import re
 
-device='cpu'
+import torch
+from PIL import Image
+from transformers import AutoTokenizer, VisionEncoderDecoderModel, ViTFeatureExtractor
+
+device = "cpu"
 encoder_checkpoint = "nlpconnect/vit-gpt2-image-captioning"
 decoder_checkpoint = "nlpconnect/vit-gpt2-image-captioning"
 model_checkpoint = "nlpconnect/vit-gpt2-image-captioning"

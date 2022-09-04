@@ -1,12 +1,12 @@
 import os
+
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-from PIL import Image, ImageDraw
 import traceback
 
-
+from docquery.document import ImageDocument, load_document
 from docquery.pipeline import get_pipeline
-from docquery.document import load_document, ImageDocument
+from PIL import Image, ImageDraw
 
 
 def ensure_list(x):
@@ -16,9 +16,7 @@ def ensure_list(x):
         return [x]
 
 
-CHECKPOINTS = {
-    "LayoutLMv1 🦉": "impira/layoutlm-document-qa"
-}
+CHECKPOINTS = {"LayoutLMv1 🦉": "impira/layoutlm-document-qa"}
 
 PIPELINES = {}
 
@@ -65,7 +63,6 @@ def normalize_bbox(box, width, height, padding=0.005):
     return [min_x * width, min_y * height, max_x * width, max_y * height]
 
 
-
 def process_path(path):
     error = None
     if path:
@@ -76,6 +73,7 @@ def process_path(path):
             traceback.print_exc()
             error = str(e)
     return None
+
 
 def process_upload(file):
     if file:

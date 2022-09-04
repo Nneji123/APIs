@@ -54,8 +54,7 @@ async def detect_object(file: UploadFile = File(...)):
         # original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
         original_image_size = original_image.shape[:2]
 
-        image_data = image_preprocess(np.copy(original_image), [
-                                      input_size, input_size])
+        image_data = image_preprocess(np.copy(original_image), [input_size, input_size])
         image_data = image_data[np.newaxis, ...].astype(np.float32)
         sess = rt.InferenceSession("models/model.onnx")
 
@@ -64,8 +63,7 @@ async def detect_object(file: UploadFile = File(...)):
         input_name = sess.get_inputs()[0].name
 
         detections = sess.run(output_names, {input_name: image_data})
-        print("Output shape:", list(
-            map(lambda detection: detection.shape, detections)))
+        print("Output shape:", list(map(lambda detection: detection.shape, detections)))
 
         ANCHORS = "models/anchors.txt"
         STRIDES = [8, 16, 32]
@@ -75,8 +73,7 @@ async def detect_object(file: UploadFile = File(...)):
         STRIDES = np.array(STRIDES)
 
         pred_bbox = postprocess_bbbox(detections, ANCHORS, STRIDES, XYSCALE)
-        bboxes = postprocess_boxes(
-            pred_bbox, original_image_size, input_size, 0.25)
+        bboxes = postprocess_boxes(pred_bbox, original_image_size, input_size, 0.25)
         bboxes = nms(bboxes, 0.213, method="nms")
         image = draw_bbox(original_image, bboxes)
         cv2.imwrite("output.jpg", image)
@@ -84,6 +81,7 @@ async def detect_object(file: UploadFile = File(...)):
     except ValueError:
         vals = "Error! Please upload a valid image type."
         return vals
+
 
 # endpoint for just enhancing the image
 
@@ -102,8 +100,7 @@ async def detect_object_test(file: UploadFile = File(...)):
         # original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
         original_image_size = original_image.shape[:2]
 
-        image_data = image_preprocess(np.copy(original_image), [
-                                      input_size, input_size])
+        image_data = image_preprocess(np.copy(original_image), [input_size, input_size])
         image_data = image_data[np.newaxis, ...].astype(np.float32)
         sess = rt.InferenceSession("models/model.onnx")
 
@@ -112,8 +109,7 @@ async def detect_object_test(file: UploadFile = File(...)):
         input_name = sess.get_inputs()[0].name
 
         detections = sess.run(output_names, {input_name: image_data})
-        print("Output shape:", list(
-            map(lambda detection: detection.shape, detections)))
+        print("Output shape:", list(map(lambda detection: detection.shape, detections)))
 
         ANCHORS = "models/anchors.txt"
         STRIDES = [8, 16, 32]
@@ -123,8 +119,7 @@ async def detect_object_test(file: UploadFile = File(...)):
         STRIDES = np.array(STRIDES)
 
         pred_bbox = postprocess_bbbox(detections, ANCHORS, STRIDES, XYSCALE)
-        bboxes = postprocess_boxes(
-            pred_bbox, original_image_size, input_size, 0.25)
+        bboxes = postprocess_boxes(pred_bbox, original_image_size, input_size, 0.25)
         bboxes = nms(bboxes, 0.213, method="nms")
         image = get_class_labels(original_image, bboxes)
         return image

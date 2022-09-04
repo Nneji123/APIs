@@ -6,10 +6,12 @@ import numpy as np
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
-from utils import convert_pdf, classify_image
-from pdf2image.exceptions import (PDFInfoNotInstalledError, PDFPageCountError,
-                                  PDFSyntaxError)
-
+from pdf2image.exceptions import (
+    PDFInfoNotInstalledError,
+    PDFPageCountError,
+    PDFSyntaxError,
+)
+from utils import classify_image, convert_pdf
 
 app = FastAPI(
     title="Document Classifier API",
@@ -48,9 +50,9 @@ async def get_document(file: UploadFile = File(...)):
     try:
         data = convert_pdf("filename.pdf")
         return data
-    except (PDFInfoNotInstalledError, PDFPageCountError,
-                                  PDFSyntaxError) as e:
+    except (PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError) as e:
         return "Unable to parse document! Please upload a valid PDF file."
+
 
 @app.post("/classify-image")
 async def get_image(file: UploadFile = File(...)):
@@ -64,4 +66,4 @@ async def get_image(file: UploadFile = File(...)):
         return data
     except (ValueError, cv2.error) as e:
         vals = "Error! Please upload a valid image type."
-        return vals 
+        return vals

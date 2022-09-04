@@ -4,10 +4,10 @@ import sys
 
 import cv2
 import numpy as np
-from pixelate import pixel
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
+from pixelate import pixel
 
 sys.path.append(os.path.abspath(os.path.join("..", "config")))
 
@@ -39,7 +39,13 @@ async def home():
 
 
 @app.post("/pixelate")
-async def pixelate_image(file: UploadFile = File(...), downsample: int = 14, palette: int = 7, depth: int = 1, upscale: int = 14):
+async def pixelate_image(
+    file: UploadFile = File(...),
+    downsample: int = 14,
+    palette: int = 7,
+    depth: int = 1,
+    upscale: int = 14,
+):
 
     contents = io.BytesIO(await file.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)

@@ -10,7 +10,6 @@ from PIL import Image
 
 app = FastAPI(
     title="Image Deblur API",
-
     description="""An API for deblurring images.""",
     version="0.0.1",
 )

@@ -7,7 +7,7 @@ from utils import execute_query
 
 app = FastAPI(
     title="Table Query API",
-    description="""An API for querying tables with natural language."""
+    description="""An API for querying tables with natural language.""",
 )
 
 origins = ["*"]
@@ -32,7 +32,7 @@ async def home():
 
 
 @app.post("/table-query", tags=["table-query"])
-async def get_table(question:str, file: UploadFile = File(...)):
+async def get_table(question: str, file: UploadFile = File(...)):
     files = await file.read()
     # save the file
     filename = "filename.csv"
@@ -46,4 +46,3 @@ async def get_table(question:str, file: UploadFile = File(...)):
         return data
     except ValueError as e:
         return {"error": str(e)}
-    

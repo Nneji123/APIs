@@ -1,12 +1,13 @@
-import pandas as pd
-from PIL import Image
-from PIL import ImageDraw
-import easyocr
 import warnings
+
+import easyocr
+import pandas as pd
+from PIL import Image, ImageDraw
+
 warnings.filterwarnings("ignore")
 
 
-def draw_boxes(image, bounds, color='yellow', width=2):
+def draw_boxes(image, bounds, color="yellow", width=2):
     draw = ImageDraw.Draw(image)
     for bound in bounds:
         p0, p1, p2, p3 = bound[0]
@@ -27,7 +28,7 @@ def inference(img, lang):
     bounds = reader.readtext(img)
     im = Image.open(img)
     draw_boxes(im, bounds)
-    im.save('output.jpg')
+    im.save("output.jpg")
 
 
 inference("image.jpg", "en")

@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import argparse
+import collections
 import contextlib
 import copy
 import importlib
@@ -12,12 +13,11 @@ import os
 import sys
 import warnings
 from itertools import accumulate
-from typing import Callable, Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional
 
 import torch
 import torch.nn.functional as F
 from torch import Tensor
-import collections
 
 if TYPE_CHECKING:
     from fairseq.modules.multihead_attention import MultiheadAttention
@@ -85,7 +85,9 @@ def apply_to_sample(f, sample):
             return f(x)
         elif isinstance(x, collections.OrderedDict):
             # OrderedDict has attributes that needs to be preserved
-            od = collections.OrderedDict((key, _apply(value)) for key, value in x.items())
+            od = collections.OrderedDict(
+                (key, _apply(value)) for key, value in x.items()
+            )
             od.__dict__ = x.__dict__
             return od
         elif isinstance(x, dict):
@@ -527,7 +529,7 @@ def get_perplexity(loss, round=2, base=2):
     if loss is None:
         return 0.0
     try:
-        return safe_round(base ** loss, round)
+        return safe_round(base**loss, round)
     except OverflowError:
         return float("inf")
 

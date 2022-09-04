@@ -3,13 +3,11 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import contextlib
 import logging
 import os
-
-import contextlib
 from dataclasses import dataclass, field
 from typing import Optional
-from omegaconf import MISSING, II, open_dict, OmegaConf
 
 import numpy as np
 from fairseq.data import (
@@ -29,9 +27,9 @@ from fairseq.data import (
     data_utils,
 )
 from fairseq.data.shorten_dataset import maybe_shorten_dataset
-from fairseq.tasks import FairseqDataclass, FairseqTask, register_task
 from fairseq.dataclass import ChoiceEnum
-
+from fairseq.tasks import FairseqDataclass, FairseqTask, register_task
+from omegaconf import II, MISSING, OmegaConf, open_dict
 
 logger = logging.getLogger(__name__)
 SHORTEN_METHOD_CHOICES = ChoiceEnum(["none", "truncate", "random_crop"])

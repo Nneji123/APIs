@@ -1,10 +1,9 @@
-from fastapi import FastAPI
-from fastapi.responses import PlainTextResponse
-import uvicorn
 import joblib
 import numpy as np
+import uvicorn
 from extract import emailToFeature
-
+from fastapi import FastAPI
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 
 
@@ -12,14 +11,12 @@ class Email(BaseModel):
     email: str
 
     class Config:
-        schema_extra = {
-            "example": {
-                "email": "this is a test email"}
-        }
+        schema_extra = {"example": {"email": "this is a test email"}}
 
 
-app = FastAPI(title='Spam Email Detector API',
-              description='Accurately detecting spam mails')
+app = FastAPI(
+    title="Spam Email Detector API", description="Accurately detecting spam mails"
+)
 
 
 @app.get("/", response_class=PlainTextResponse)
@@ -31,12 +28,12 @@ def home():
 async def pred(mail: Email):
     email = mail.email
 
-    emailTof = emailToFeature('vocabulary.csv')
+    emailTof = emailToFeature("vocabulary.csv")
     email_ = emailTof.fea_vector(email)
     email1 = np.concatenate((np.ones((email_.shape[0], 1)), email_), 1)
     email_final = email1.reshape(-1, 1)
 
-    loaded_model = joblib.load(open('model.pkl', 'rb'))
+    loaded_model = joblib.load(open("model.pkl", "rb"))
     prediction = loaded_model.predict(email_final.T)
 
     if prediction == 0:
@@ -45,5 +42,5 @@ async def pred(mail: Email):
         return {"Outcome": "Spam message!"}
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     uvicorn.run(app)

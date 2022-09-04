@@ -16,7 +16,6 @@ from fairseq.models import (
     register_model_architecture,
 )
 
-
 logger = logging.getLogger(__name__)
 
 

@@ -5,12 +5,11 @@ import numpy as np
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
-from utils import *
 from PIL import Image
+from utils import *
 
 app = FastAPI(
     title="OCR(Optical Character Recognition) API",
-
     description="""An API for OCR(Optical Character Recognition)!""",
     version="0.0.1",
 )

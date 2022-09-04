@@ -2,15 +2,17 @@ import io
 import os
 
 import cv2
-from PIL import Image
 import numpy as np
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
-from utils import process_question, load_document, process_question_image
-from pdf2image.exceptions import (PDFInfoNotInstalledError, PDFPageCountError,
-                                  PDFSyntaxError)
-
+from pdf2image.exceptions import (
+    PDFInfoNotInstalledError,
+    PDFPageCountError,
+    PDFSyntaxError,
+)
+from PIL import Image
+from utils import load_document, process_question, process_question_image
 
 app = FastAPI(
     title="Document Query API",
@@ -37,13 +39,18 @@ async def home():
     """
     return note
 
+
 def delete_file(file_path):
     if os.path.exists(file_path):
         os.remove(file_path)
 
 
 @app.post("/query-document", tags=["query"])
-async def get_document(type_of_response:str, question:str, file: UploadFile = File(...), ):
+async def get_document(
+    type_of_response: str,
+    question: str,
+    file: UploadFile = File(...),
+):
     files = await file.read()
     # save the file
     filename = "filename.pdf"
@@ -58,13 +65,13 @@ async def get_document(type_of_response:str, question:str, file: UploadFile = Fi
             return data
         delete_file("filename.pdf")
         delete_file("output.jpg")
-    except (PDFInfoNotInstalledError, PDFPageCountError,
-                                  PDFSyntaxError) as e:
+    except (PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError) as e:
         e = "Unable to parse document! Please upload a valid PDF file."
         return e
 
+
 @app.post("/query-image", tags=["query image"])
-async def get_image(type_of_response:str, question:str, file: UploadFile = File(...)):
+async def get_image(type_of_response: str, question: str, file: UploadFile = File(...)):
 
     contents = io.BytesIO(await file.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
@@ -83,4 +90,3 @@ async def get_image(type_of_response:str, question:str, file: UploadFile = File(
     except ValueError as e:
         e = "Error! Please upload a valid image type."
         return e
-    

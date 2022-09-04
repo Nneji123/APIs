@@ -7,10 +7,8 @@ import numpy as np
 from fastapi import FastAPI, File, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
-from PIL import Image
 from myfunc import image_caption
-
-
+from PIL import Image
 
 app = FastAPI(
     title="Image Caption Generator API",

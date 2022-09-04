@@ -1,30 +1,32 @@
 # author : LiHE
-import torch
 import numpy as np
-from fairseq import utils, tasks
-from fairseq import checkpoint_utils
-from utils.eval_utils import eval_step
-from tasks.mm_tasks.caption import CaptionTask
+import torch
+from fairseq import checkpoint_utils, tasks, utils
 from models.ofa import OFAModel
 from PIL import Image
+from tasks.mm_tasks.caption import CaptionTask
 from torchvision import transforms
+from utils.eval_utils import eval_step
 
 # Register caption task
-tasks.register_task('caption', CaptionTask)
+tasks.register_task("caption", CaptionTask)
 # turn on cuda if GPU is available
 use_cuda = torch.cuda.is_available()
 # use fp16 only when GPU is available
 use_fp16 = False
 
 
-
-
 # Load pretrained ckpt & config
-overrides = {"bpe_dir": "utils/BPE", "eval_cider": False, "beam": 5,
-             "max_len_b": 16, "no_repeat_ngram_size": 3, "seed": 7}
+overrides = {
+    "bpe_dir": "utils/BPE",
+    "eval_cider": False,
+    "beam": 5,
+    "max_len_b": 16,
+    "no_repeat_ngram_size": 3,
+    "seed": 7,
+}
 models, cfg, task = checkpoint_utils.load_model_ensemble_and_task(
-    utils.split_paths('checkpoints/caption.pt'),
-    arg_overrides=overrides
+    utils.split_paths("checkpoints/caption.pt"), arg_overrides=overrides
 )
 
 # Move models to GPU
@@ -42,12 +44,17 @@ generator = task.build_generator(models, cfg.generation)
 mean = [0.5, 0.5, 0.5]
 std = [0.5, 0.5, 0.5]
 
-patch_resize_transform = transforms.Compose([
-    lambda image: image.convert("RGB"),
-    transforms.Resize((cfg.task.patch_image_size, cfg.task.patch_image_size), interpolation=Image.BICUBIC),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=mean, std=std),
-])
+patch_resize_transform = transforms.Compose(
+    [
+        lambda image: image.convert("RGB"),
+        transforms.Resize(
+            (cfg.task.patch_image_size, cfg.task.patch_image_size),
+            interpolation=Image.BICUBIC,
+        ),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=mean, std=std),
+    ]
+)
 
 # Text preprocess
 bos_item = torch.LongTensor([task.src_dict.bos()])
@@ -57,9 +64,7 @@ pad_idx = task.src_dict.pad()
 
 def encode_text(text, length=None, append_bos=False, append_eos=False):
     s = task.tgt_dict.encode_line(
-        line=task.bpe.encode(text),
-        add_if_not_exist=False,
-        append_eos=False
+        line=task.bpe.encode(text), add_if_not_exist=False, append_eos=False
     ).long()
     if length is not None:
         s = s[:length]
@@ -74,16 +79,18 @@ def encode_text(text, length=None, append_bos=False, append_eos=False):
 def construct_sample(image: Image):
     patch_image = patch_resize_transform(image).unsqueeze(0)
     patch_mask = torch.tensor([True])
-    src_text = encode_text(" what does the image describe?", append_bos=True, append_eos=True).unsqueeze(0)
+    src_text = encode_text(
+        " what does the image describe?", append_bos=True, append_eos=True
+    ).unsqueeze(0)
     src_length = torch.LongTensor([s.ne(pad_idx).long().sum() for s in src_text])
     sample = {
-        "id": np.array(['42']),
+        "id": np.array(["42"]),
         "net_input": {
             "src_tokens": src_text,
             "src_lengths": src_length,
             "patch_images": patch_image,
-            "patch_masks": patch_mask
-        }
+            "patch_masks": patch_mask,
+        },
     }
     return sample
 
@@ -102,4 +109,4 @@ def image_caption(Image):
     sample = utils.apply_to_sample(apply_half, sample) if use_fp16 else sample
     with torch.no_grad():
         result, scores = eval_step(task, generator, models, sample)
-    return result[0]['caption']
+    return result[0]["caption"]

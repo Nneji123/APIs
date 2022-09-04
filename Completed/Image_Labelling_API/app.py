@@ -5,11 +5,10 @@ import numpy as np
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
-from utils import inference, get_label
+from utils import get_label, inference
 
 app = FastAPI(
     title="Image Labelling API",
-
     description="""An API for labelling images.""",
     version="0.0.1",
 )

@@ -1,12 +1,12 @@
 from collections import defaultdict
 
 
-class TreeNode():
+class TreeNode:
     def __init__(self):
         self.child = defaultdict(TreeNode)
 
-class Trie:
 
+class Trie:
     def __init__(self, eos):
         self.root = TreeNode()
         self.eos = eos

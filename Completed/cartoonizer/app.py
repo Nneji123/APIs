@@ -5,12 +5,11 @@ import numpy as np
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
-from utils import inference
 from PIL import Image
+from utils import inference
 
 app = FastAPI(
     title="Cartoonizer API",
-
     description="""An API for generating cartoonized images.""",
     version="0.0.1",
 )

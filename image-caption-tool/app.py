@@ -3,10 +3,10 @@ import os
 
 import cv2
 import numpy as np
-from PIL import Image
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
+from PIL import Image
 from utils import predict
 
 app = FastAPI(
@@ -49,4 +49,4 @@ async def get_image(file: UploadFile = File(...)):
         return data
     except ValueError as e:
         e = "Error! Please upload a valid image type."
-        return e 
+        return e

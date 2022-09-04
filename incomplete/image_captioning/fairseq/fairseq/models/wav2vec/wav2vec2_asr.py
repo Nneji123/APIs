@@ -3,22 +3,20 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-from argparse import Namespace
 import contextlib
 import copy
 import math
+from argparse import Namespace
+from dataclasses import dataclass, field
+from typing import Any, Optional
+
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from dataclasses import dataclass, field
-from omegaconf import MISSING, II, open_dict
-from typing import Any, Optional
-
 from fairseq import checkpoint_utils, tasks, utils
 from fairseq.dataclass import FairseqDataclass
 from fairseq.dataclass.utils import convert_namespace_to_omegaconf
-from fairseq.tasks import FairseqTask
 from fairseq.models import (
     BaseFairseqModel,
     FairseqEncoder,
@@ -27,11 +25,9 @@ from fairseq.models import (
     register_model,
 )
 from fairseq.models.wav2vec.wav2vec2 import MASKING_DISTRIBUTION_CHOICES
-from fairseq.modules import (
-    LayerNorm,
-    PositionalEmbedding,
-    TransformerDecoderLayer,
-)
+from fairseq.modules import LayerNorm, PositionalEmbedding, TransformerDecoderLayer
+from fairseq.tasks import FairseqTask
+from omegaconf import II, MISSING, open_dict
 
 
 @dataclass
@@ -428,9 +424,9 @@ class Wav2VecEncoder(FairseqEncoder):
                 1, new_order
             )
         if encoder_out["padding_mask"] is not None:
-            encoder_out["padding_mask"] = encoder_out[
-                "padding_mask"
-            ].index_select(0, new_order)
+            encoder_out["padding_mask"] = encoder_out["padding_mask"].index_select(
+                0, new_order
+            )
         return encoder_out
 
     def max_positions(self):
@@ -518,7 +514,7 @@ class TransformerDecoder(FairseqIncrementalDecoder):
             self.embed_out = nn.Parameter(
                 torch.Tensor(len(dictionary), self.output_embed_dim)
             )
-            nn.init.normal_(self.embed_out, mean=0, std=self.output_embed_dim ** -0.5)
+            nn.init.normal_(self.embed_out, mean=0, std=self.output_embed_dim**-0.5)
 
         if transformer_cfg.decoder_normalize_before:
             self.layer_norm = LayerNorm(embed_dim)
@@ -606,7 +602,7 @@ class TransformerDecoder(FairseqIncrementalDecoder):
                     self_attn_mask=self.buffered_future_mask(x)
                     if incremental_state is None
                     else None,
-                    self_attn_padding_mask=self_attn_padding_mask
+                    self_attn_padding_mask=self_attn_padding_mask,
                 )
                 inner_states.append(x)
 
@@ -651,7 +647,7 @@ class TransformerDecoder(FairseqIncrementalDecoder):
 
 def Embedding(num_embeddings, embedding_dim, padding_idx):
     m = nn.Embedding(num_embeddings, embedding_dim, padding_idx=padding_idx)
-    nn.init.normal_(m.weight, mean=0, std=embedding_dim ** -0.5)
+    nn.init.normal_(m.weight, mean=0, std=embedding_dim**-0.5)
     nn.init.constant_(m.weight[padding_idx], 0)
     return m
 

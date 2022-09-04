@@ -1,5 +1,5 @@
+from pyxelate import Pal, Pyx
 from skimage import io
-from pyxelate import Pyx, Pal
 
 
 def pixel(image, downsample, palette, depth, upscale):
@@ -8,8 +8,9 @@ def pixel(image, downsample, palette, depth, upscale):
     downsample_by = int(downsample)
     palette = int(palette)  # find 7 colors
     # 1) Instantiate Pyx transformer
-    pyx = Pyx(factor=downsample_by, palette=palette,
-              depth=int(depth), upscale=int(upscale))
+    pyx = Pyx(
+        factor=downsample_by, palette=palette, depth=int(depth), upscale=int(upscale)
+    )
     # 2) fit an image, allow Pyxelate to learn the color palette
     pyx.fit(image)
     # 3) transform image to pixel art using the learned color palette

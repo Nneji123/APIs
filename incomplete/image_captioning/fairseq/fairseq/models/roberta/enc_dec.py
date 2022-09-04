@@ -1,15 +1,15 @@
 import argparse
 import logging
 
-import torch.nn as nn
 import fairseq.checkpoint_utils
+import torch.nn as nn
 from fairseq.models import (
     FairseqEncoderDecoderModel,
     register_model,
     register_model_architecture,
 )
-from fairseq.models.transformer import TransformerDecoder
 from fairseq.models.roberta import model as roberta
+from fairseq.models.transformer import TransformerDecoder
 
 logger = logging.getLogger(__name__)
 

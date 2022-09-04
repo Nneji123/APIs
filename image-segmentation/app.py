@@ -3,10 +3,10 @@ import os
 
 import cv2
 import numpy as np
-from PIL import Image
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import PlainTextResponse, FileResponse
+from fastapi.responses import FileResponse, PlainTextResponse
+from PIL import Image
 from utils import predict_mask
 
 app = FastAPI(
@@ -25,7 +25,6 @@ app.add_middleware(
 )
 
 
-
 @app.get("/", response_class=PlainTextResponse, tags=["home"])
 async def home():
     note = """
@@ -37,7 +36,7 @@ async def home():
 
 
 @app.post("/segment-image")
-async def get_image(confidence:int, file: UploadFile = File(...)):
+async def get_image(confidence: int, file: UploadFile = File(...)):
 
     contents = io.BytesIO(await file.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
@@ -46,10 +45,9 @@ async def get_image(confidence:int, file: UploadFile = File(...)):
     try:
         image = Image.open("image.jpg")
         image = np.asarray(image)
-        #questions = data.question
-        predict_mask(im=image,confidence=confidence)
+        # questions = data.question
+        predict_mask(im=image, confidence=confidence)
         return FileResponse("output.jpg", media_type="image/jpeg")
     except ValueError as e:
         e = "Error! Please upload a valid image type."
-        return e 
-
+        return e

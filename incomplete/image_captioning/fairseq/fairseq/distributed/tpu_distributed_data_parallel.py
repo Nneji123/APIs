@@ -4,13 +4,11 @@
 # LICENSE file in the root directory of this source tree.
 
 import torch
-from torch import nn
-
 from fairseq.distributed import utils
+from torch import nn
 
 
 class TPUDistributedDataParallel(nn.Module):
-
     def __init__(self, module, process_group):
         super().__init__()
         self.module = module
@@ -35,9 +33,10 @@ class TPUDistributedDataParallel(nn.Module):
             gradients.append(p.grad)
 
         import torch_xla.core.xla_model as xm
+
         xm.all_reduce(
-            'sum',
+            "sum",
             gradients,
-            scale=1. / self.world_size,
+            scale=1.0 / self.world_size,
             groups=self.process_group[1],
         )

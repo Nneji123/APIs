@@ -3,12 +3,11 @@ import os
 
 import cv2
 import numpy as np
-from PIL import Image
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
-from utils import self_caption, classify_image
-
+from PIL import Image
+from utils import classify_image, self_caption
 
 app = FastAPI(
     title="Image Captioning API",
@@ -37,7 +36,7 @@ async def home():
 
 
 @app.post("/caption-image")
-async def get_image(response_options:str, file: UploadFile = File(...)):
+async def get_image(response_options: str, file: UploadFile = File(...)):
 
     contents = io.BytesIO(await file.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
@@ -57,4 +56,4 @@ async def get_image(response_options:str, file: UploadFile = File(...)):
             return data
     except ValueError as e:
         e = "Error! Please upload a valid image type."
-        return e 
+        return e

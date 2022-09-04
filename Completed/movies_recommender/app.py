@@ -1,6 +1,7 @@
 import io
 import os
 import sys
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -45,5 +46,6 @@ async def get_movie(data: MovieName):
     text = check(data.movie)
     return text
 
-if __name__=="__main__":
-    uvicorn.run(app, port=8000) 
+
+if __name__ == "__main__":
+    uvicorn.run(app, port=8000)

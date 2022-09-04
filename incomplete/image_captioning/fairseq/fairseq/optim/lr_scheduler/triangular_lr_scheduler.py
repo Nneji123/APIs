@@ -7,10 +7,9 @@ import math
 from dataclasses import dataclass, field
 from typing import List
 
-from omegaconf import II
-
 from fairseq.dataclass import FairseqDataclass
 from fairseq.optim.lr_scheduler import FairseqLRScheduler, register_lr_scheduler
+from omegaconf import II
 
 
 @dataclass
@@ -69,7 +68,7 @@ class TriangularLRSchedule(FairseqLRScheduler):
         """Update the learning rate after each update."""
         cycle = math.floor(num_updates / (2 * self.stepsize))
 
-        lr_shrink = self.lr_shrink ** cycle
+        lr_shrink = self.lr_shrink**cycle
         max_lr = self.max_lr * lr_shrink
         if self.shrink_min:
             min_lr = self.min_lr * lr_shrink

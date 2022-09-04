@@ -1,8 +1,10 @@
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
-from transformers import TapasTokenizer, TFTapasForQuestionAnswering
-import pandas as pd
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import datetime
+
+import pandas as pd
+from transformers import TapasTokenizer, TFTapasForQuestionAnswering
 
 
 def execute_query(query, csv_file):
@@ -18,16 +20,23 @@ def execute_query(query, csv_file):
 
     queries = [query]
 
-    inputs = tokenizer(table=table, queries=queries, padding="max_length", return_tensors="tf")
+    inputs = tokenizer(
+        table=table, queries=queries, padding="max_length", return_tensors="tf"
+    )
     outputs = model(**inputs)
 
-    predicted_answer_coordinates, predicted_aggregation_indices = tokenizer.convert_logits_to_predictions(
+    (
+        predicted_answer_coordinates,
+        predicted_aggregation_indices,
+    ) = tokenizer.convert_logits_to_predictions(
         inputs, outputs.logits, outputs.logits_aggregation
     )
 
     # let's print out the results:
     id2aggregation = {0: "NONE", 1: "SUM", 2: "AVERAGE", 3: "COUNT"}
-    aggregation_predictions_string = [id2aggregation[x] for x in predicted_aggregation_indices]
+    aggregation_predictions_string = [
+        id2aggregation[x] for x in predicted_aggregation_indices
+    ]
 
     answers = []
     for coordinates in predicted_answer_coordinates:
@@ -41,18 +50,15 @@ def execute_query(query, csv_file):
                 cell_values.append(table.iat[coordinate])
             answers.append(cell_values)
 
-    for query, answer, predicted_agg in zip(queries, answers, aggregation_predictions_string):
+    for query, answer, predicted_agg in zip(
+        queries, answers, aggregation_predictions_string
+    ):
         if predicted_agg != "NONE":
             answers.append(predicted_agg)
 
-    query_result = {
-        "query": query,
-        "result": answers
-    }
+    query_result = {"query": query, "result": answers}
 
     b = datetime.datetime.now()
     print(b - a)
 
     return query_result
-
-

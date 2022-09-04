@@ -11,7 +11,6 @@ from fairseq.dataclass import FairseqDataclass
 
 from .gpt2_bpe_utils import get_encoder
 
-
 DEFAULT_ENCODER_JSON = "https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/encoder.json"
 DEFAULT_VOCAB_BPE = "https://dl.fbaipublicfiles.com/fairseq/gpt2_bpe/vocab.bpe"
 
@@ -38,7 +37,12 @@ class GPT2BPE(object):
 
     def decode(self, x: str) -> str:
         return self.bpe.decode(
-            [int(tok) if tok not in {"<unk>", "<mask>"} and not tok.startswith('<') else tok for tok in x.split()]
+            [
+                int(tok)
+                if tok not in {"<unk>", "<mask>"} and not tok.startswith("<")
+                else tok
+                for tok in x.split()
+            ]
         )
 
     def is_beginning_of_word(self, x: str) -> bool:

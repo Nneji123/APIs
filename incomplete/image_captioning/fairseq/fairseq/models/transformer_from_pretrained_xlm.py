@@ -13,6 +13,8 @@ from fairseq.models.transformer import (
     TransformerDecoder,
     TransformerEncoder,
     TransformerModel,
+)
+from fairseq.models.transformer import (
     base_architecture as transformer_base_architecture,
 )
 

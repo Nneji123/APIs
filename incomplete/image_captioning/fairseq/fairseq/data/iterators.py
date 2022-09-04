@@ -16,7 +16,6 @@ import numpy as np
 import torch
 from fairseq.data import data_utils
 
-
 logger = logging.getLogger(__name__)
 
 # Object used by _background_consumer to signal the source is exhausted
@@ -55,8 +54,10 @@ class CountingIterator(object):
         try:
             x = next(self._itr)
         except StopIteration:
-            raise IndexError(f"Iterator expected to have length {self.total}, "
-                             "but exhausted at position {self.n}.")
+            raise IndexError(
+                f"Iterator expected to have length {self.total}, "
+                "but exhausted at position {self.n}."
+            )
         self.n += 1
         return x
 
@@ -594,7 +595,7 @@ class BufferedIterator(object):
             self._queue,
             self._iterable,
             self.total,
-            torch.cuda.current_device() if torch.cuda.is_available() else None
+            torch.cuda.current_device() if torch.cuda.is_available() else None,
         )
         self._consumer.daemon = True
         self._consumer.start()
@@ -638,6 +639,7 @@ class BufferedIterator(object):
         if item is _sentinel:
             raise StopIteration()
         return item
+
 
 class GroupedEpochBatchIterator(EpochBatchIterator):
     """Grouped version of EpochBatchIterator

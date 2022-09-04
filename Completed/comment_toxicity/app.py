@@ -1,6 +1,7 @@
 import io
 import os
 import sys
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,6 +10,7 @@ from pydantic import BaseModel
 
 sys.path.append(os.path.abspath(os.path.join("..", "config")))
 from utils import score_comment
+
 app = FastAPI(
     title="Comment Toxicity Classifier API",
     description="""An API for classifying and detecting toxicity of comment.""",
@@ -44,5 +46,6 @@ async def get_comment(data: Comment):
     text = score_comment(data.comment)
     return text
 
-if __name__=="__main__":
-    uvicorn.run(app, port=8000) 
+
+if __name__ == "__main__":
+    uvicorn.run(app, port=8000)

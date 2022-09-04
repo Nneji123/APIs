@@ -23,7 +23,6 @@ from fairseq.modules import (
 from fairseq.modules.transformer_sentence_encoder import init_bert_params
 from fairseq.utils import safe_hasattr
 
-
 logger = logging.getLogger(__name__)
 
 

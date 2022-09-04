@@ -20,7 +20,6 @@ from fairseq.models import (
 )
 from fairseq.tasks.fairseq_task import LegacyFairseqTask
 
-
 DEFAULT_TEST_VOCAB_SIZE = 100
 
 

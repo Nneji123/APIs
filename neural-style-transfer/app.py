@@ -5,7 +5,6 @@ import numpy as np
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
-
 from utils import inference
 
 app = FastAPI(
@@ -24,7 +23,6 @@ app.add_middleware(
 )
 
 
-
 @app.get("/", response_class=PlainTextResponse, tags=["home"])
 async def home():
     note = """
@@ -34,8 +32,14 @@ async def home():
     return note
 
 
-@app.post("/style-transfer", tags=["style-transfer"], description="Transfer style of an image. input_image is the image to be styled and style_image is the image to be used as style.")
-async def get_image(input_image: UploadFile = File(...), style_image: UploadFile = File(...)):
+@app.post(
+    "/style-transfer",
+    tags=["style-transfer"],
+    description="Transfer style of an image. input_image is the image to be styled and style_image is the image to be used as style.",
+)
+async def get_image(
+    input_image: UploadFile = File(...), style_image: UploadFile = File(...)
+):
 
     contents = io.BytesIO(await input_image.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
@@ -50,5 +54,4 @@ async def get_image(input_image: UploadFile = File(...), style_image: UploadFile
         return FileResponse("output.jpg", media_type="image/jpeg")
     except ValueError as e:
         e = "Error! Please upload a valid image type."
-        return e 
-
+        return e

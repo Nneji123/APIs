@@ -16,7 +16,6 @@ from fairseq.data.legacy.masked_lm_dictionary import MaskedLMDictionary
 from fairseq.data.multi_corpus_sampled_dataset import MultiCorpusSampledDataset
 from fairseq.tasks import LegacyFairseqTask, register_task
 
-
 logger = logging.getLogger(__name__)
 
 

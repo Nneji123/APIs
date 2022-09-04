@@ -25,7 +25,6 @@ from fairseq.data import (
 from fairseq.data.shorten_dataset import maybe_shorten_dataset
 from fairseq.tasks import LegacyFairseqTask, register_task
 
-
 logger = logging.getLogger(__name__)
 
 

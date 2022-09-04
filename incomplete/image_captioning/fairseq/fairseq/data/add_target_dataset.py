@@ -4,9 +4,9 @@
 # LICENSE file in the root directory of this source tree.
 
 import torch
+from fairseq.data.text_compressor import TextCompressionLevel, TextCompressor
 
 from . import BaseWrapperDataset, data_utils
-from fairseq.data.text_compressor import TextCompressor, TextCompressionLevel
 
 
 class AddTargetDataset(BaseWrapperDataset):
@@ -20,7 +20,7 @@ class AddTargetDataset(BaseWrapperDataset):
         process_label=None,
         label_len_fn=None,
         add_to_input=False,
-        text_compression_level=TextCompressionLevel.none
+        text_compression_level=TextCompressionLevel.none,
     ):
         super().__init__(dataset)
         self.labels = labels
