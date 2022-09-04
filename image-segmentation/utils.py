@@ -13,7 +13,7 @@ model = DetrForSegmentation.from_pretrained('facebook/detr-resnet-50-panoptic')
 
 def predict_mask(im, confidence=85):
     image = Image.fromarray(im) # im: numpy array 3d: 480, 640, 3: to PIL Image
-    image = image.resize((800,600)) #  PIL image # could I upsample output instead? better?
+    image = image.resize((400,400)) #  PIL image # could I upsample output instead? better?
 
     # encoding is a dict with pixel_values and pixel_mask
     encoding = feature_extractor(images=image, return_tensors="pt") #pt=Pytorch, tf=TensorFlow
