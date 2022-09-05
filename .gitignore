@@ -148,3 +148,4 @@ comment_toxicity_model.h5
 caption.pt
 .gitattributes
 flagged/
+similarity.pkl
