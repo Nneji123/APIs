@@ -1,0 +1,5 @@
+converter==1.0.0
+fastapi[all]
+pydub==0.25.1
+SpeechRecognition==3.8.1
+uvicorn==0.18.2

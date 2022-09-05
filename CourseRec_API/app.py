@@ -33,14 +33,18 @@ def info(name:str):
 # a route for course recommendation
 @app.post('/recommend')
 async def recommend(course:str):
-    course = course.lower()
-    correct_course = get_close_matches(
-       course, course_list, n=3, cutoff=0.3)[0]
-    index = courses_list[courses_list['course_name'] == correct_course].index[0]
-    distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
-    recommended_course_names = []
-    for i in distances[1:7]:
-        course_name = courses_list.iloc[i[0]].course_name
-        recommended_course_names.append(course_name)
+    try:
+        course = course.lower()
+        correct_course = get_close_matches(
+        course, course_list, n=3, cutoff=0.3)[0]
+        index = courses_list[courses_list['course_name'] == correct_course].index[0]
+        distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
+        recommended_course_names = []
+        for i in distances[1:7]:
+            course_name = courses_list.iloc[i[0]].course_name
+            recommended_course_names.append(course_name)
+        return {"courses":recommended_course_names}
+    except IndexError:
+        return {'message': 'No course found!'}
 
-    return recommended_course_names
+    
