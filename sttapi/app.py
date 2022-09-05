@@ -2,6 +2,8 @@ import os
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import PlainTextResponse
 from convert import audio_transcription_mp3
+import warnings
+warnings.filterwarnings("ignore")
 
 
 app = FastAPI(title='Speech to text API',
@@ -13,7 +15,7 @@ def home():
     return "Welcome! API is working perfectly well. Use /docs to proceed to transcribe your speech to text."
 
 
-@app.post("/Speech_to_text(mp3/wav files)")
+@app.post("/Speech_to_text")
 async def speech_to_text(file: UploadFile = File(...)) -> str:
     try:
         files = await file.read()
@@ -23,7 +25,9 @@ async def speech_to_text(file: UploadFile = File(...)) -> str:
         output = audio_transcription_mp3(filename)
         if os.path.exists(filename):
             os.remove(filename)
-        return output
+        if os.path.exists("audio-chunks"):
+            os.system("rm -rf audio-chunks")
+        return {"text": output}
     except Exception as e:
         return "Please input mp3/wav file only"
 

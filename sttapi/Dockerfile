@@ -2,6 +2,9 @@ FROM python:3.8.13-slim-bullseye
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y \
+    ffmpeg 
+
 RUN pip install --upgrade setuptools 
 
 ADD requirements.txt .
