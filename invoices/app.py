@@ -6,13 +6,11 @@ import numpy as np
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, PlainTextResponse
-from pdf2image.exceptions import (
-    PDFInfoNotInstalledError,
-    PDFPageCountError,
-    PDFSyntaxError,
-)
+from pdf2image.exceptions import (PDFInfoNotInstalledError, PDFPageCountError,
+                                  PDFSyntaxError)
 from PIL import Image
 from utils import load_document_image, load_document_pdf
+
 app = FastAPI(
     title="Invoice Extractor API",
     description="""An API for extracting information from invoices""",
@@ -39,13 +37,15 @@ async def home():
     return note
 
 
-def delete_file(file_path):
-    if os.path.exists(file_path):
-        os.remove(file_path)
-
-
-@app.post("/invoice-pdf", tags=["Get Invoice from PDF"])
-async def get_document(file: UploadFile = File(...),):
+@app.post(
+    "/invoice-pdf",
+    tags=["Get Invoice from PDF"],
+    description="Upload a PDF file and get the invoice information",
+)
+async def get_document(
+    type_of_response: str = "csv",
+    file: UploadFile = File(...),
+):
     files = await file.read()
     # save the file
     filename = "filename.pdf"
@@ -54,15 +54,34 @@ async def get_document(file: UploadFile = File(...),):
     # open the file and return the file name
     try:
         load_document_pdf(filename)
-        return FileResponse(filename="output.csv", media_type="text/csv")
+        if os.path.exists("filename.pdf"):
+            os.remove("filename.pdf")
+        if type_of_response == "csv":
+            return FileResponse(path="output.csv", media_type="text/csv")
+        elif type_of_response == "image":
+            return FileResponse(path="annotated.png", media_type="image/png")
 
-    except (PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError, ValueError) as e:
-        e = "Unable to parse document! Please upload a valid PDF file."
-        return e
+    except (
+        PDFInfoNotInstalledError,
+        PDFPageCountError,
+        PDFSyntaxError,
+        ValueError,
+    ) as e:
+        print(e)
+        if os.path.exists("filename.pdf"):
+            os.remove("filename.pdf")
+        if type_of_response == "csv":
+            return FileResponse(path="output.csv", media_type="text/csv")
+        elif type_of_response == "image":
+            return FileResponse(path="annotated.png", media_type="image/png")
 
 
-@app.post("/invoice-image", tags=["Get Invoice from Image"])
-async def get_image(file: UploadFile = File(...)):
+@app.post(
+    "/invoice-image",
+    tags=["Get Invoice from Image"],
+    description="Upload an image of an invoice",
+)
+async def get_image(type_of_response: str = "csv", file: UploadFile = File(...)):
 
     contents = io.BytesIO(await file.read())
     file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
@@ -70,8 +89,22 @@ async def get_image(file: UploadFile = File(...)):
     cv2.imwrite("images.jpg", img)
     try:
         im = Image.open("images.jpg")
+        im = np.asarray(im)
         load_document_image(im)
-        return FileResponse(filename="output.csv", media_type="text/csv")
+        if os.path.exists("images.jpg"):
+            os.remove("images.jpg")
+        if type_of_response == "csv":
+            return FileResponse(path="output.csv", media_type="text/csv")
+        elif type_of_response == "image":
+            return FileResponse(path="annotated.png", media_type="image/png")
     except ValueError as e:
-        e = "Error! Please upload a valid image type."
-        return e
+        print(e)
+        if os.path.exists("images.jpg"):
+            os.remove("images.jpg")
+        if type_of_response == "csv":
+            return FileResponse(path="output.csv", media_type="text/csv")
+        elif type_of_response == "image":
+            return FileResponse(path="annotated.png", media_type="image/png")
+
+
+    

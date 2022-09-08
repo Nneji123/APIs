@@ -2,13 +2,12 @@ import os
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-from PIL import Image, ImageDraw
-
-import torch
-from docquery.pipeline import get_pipeline
-from docquery.document import load_document, ImageDocument
-from docquery.ocr_reader import get_ocr_reader
 import pandas as pd
+import torch
+from docquery.document import ImageDocument, load_document
+from docquery.ocr_reader import get_ocr_reader
+from docquery.pipeline import get_pipeline
+from PIL import Image, ImageDraw
 
 
 def ensure_list(x):
@@ -41,7 +40,6 @@ def run_pipeline(model, question, document, top_k):
     return pipeline(question=question, **document.context, top_k=top_k)
 
 
-
 def lift_word_boxes(document, page):
     return document.context["image"][page][1]
 
@@ -66,8 +64,6 @@ def normalize_bbox(box, width, height, padding=0.005):
     return [min_x * width, min_y * height, max_x * width, max_y * height]
 
 
-
-
 FIELDS = {
     "Vendor Name": ["Vendor Name - Logo?", "Vendor Name - Address?"],
     "Vendor Address": ["Vendor Address?"],
@@ -86,7 +82,6 @@ FIELDS = {
 }
 
 
-
 def process_document(document, fields, model, error=None):
     if document is not None and error is None:
         json_output, table = process_fields(document, fields, model)
@@ -98,7 +93,6 @@ def process_document(document, fields, model, error=None):
         )
     else:
         return None
-
 
 
 def annotate_page(prediction, pages, document):
@@ -113,8 +107,6 @@ def annotate_page(prediction, pages, document):
         )
         draw.rectangle(((x1, y1), (x2, y2)), fill=(0, 255, 0, int(0.4 * 255)))
         image.save("annotated.png")
-
-
 
 
 def process_fields(document, fields, model=list(CHECKPOINTS.keys())[0]):
@@ -136,23 +128,19 @@ def process_fields(document, fields, model=list(CHECKPOINTS.keys())[0]):
         ret[field_name] = top
         table.append([field_name, top.get("answer") if top is not None else None])
         df = pd.DataFrame(table, columns=["Field", "Value"])
-        print(df)
+        # print(df)
         df.to_csv("output.csv", index=False)
     return table
 
 
-def load_document_pdf(pdf:str="filename.pdf" , fields=FIELDS, model=list(CHECKPOINTS.keys())[0]):
+def load_document_pdf(
+    pdf: str = "filename.pdf", fields=FIELDS, model=list(CHECKPOINTS.keys())[0]
+):
 
     document = load_document(pdf)
     return process_document(document, fields, model)
 
+
 def load_document_image(img, fields=FIELDS, model=list(CHECKPOINTS.keys())[0]):
     document = ImageDocument(Image.fromarray(img), ocr_reader=get_ocr_reader())
     return process_document(document, fields, model)
-
-
-# images = Image.open("acze_tech.png")
-
-# load_document_pdf()
-
-

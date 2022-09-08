@@ -1,6 +1,5 @@
 from docquery.pipeline import get_pipeline
 
-
 CHECKPOINTS = {
     "LayoutLMv1 for Invoices 🧾": "impira/layoutlm-invoices",
 }
@@ -17,6 +16,7 @@ def construct_pipeline(model):
     ret = get_pipeline(checkpoint=CHECKPOINTS[model], device=device)
     PIPELINES[model] = ret
     return ret
+
 
 construct_pipeline(model=list(CHECKPOINTS.keys())[0])
 print("Download complete")
