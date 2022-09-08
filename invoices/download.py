@@ -1,7 +1,11 @@
 from docquery.pipeline import get_pipeline
 
+
+CHECKPOINTS = {
+    "LayoutLMv1 for Invoices 🧾": "impira/layoutlm-invoices",
+}
+
 PIPELINES = {}
-CHECKPOINTS = {"LayoutLMv1 🦉": "impira/layoutlm-invoices"}
 
 
 def construct_pipeline(model):
@@ -14,6 +18,5 @@ def construct_pipeline(model):
     PIPELINES[model] = ret
     return ret
 
-
 construct_pipeline(model=list(CHECKPOINTS.keys())[0])
-print("Model Downloaded!")
+print("Download complete")

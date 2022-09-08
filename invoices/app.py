@@ -55,7 +55,7 @@ async def get_document(file: UploadFile = File(...),):
     try:
         load_document_pdf(filename)
         return FileResponse(filename="output.csv", media_type="text/csv")
-        
+
     except (PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError, ValueError) as e:
         e = "Unable to parse document! Please upload a valid PDF file."
         return e

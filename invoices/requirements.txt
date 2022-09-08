@@ -1,6 +1,7 @@
-git+https://github.com/huggingface/transformers.git@21f6f58721dd9154357576be6de54eefef1f1818
-git+https://github.com/impira/docquery.git@4a28ebe9be343f2769808dd07d52692aca496480
+git+https://github.com/huggingface/transformers.git@90f6fe9155d2f477588d9ba2d7c697a1933e205a
+git+https://github.com/impira/docquery.git@c9ba34072b980b04992e5c063805feeaf0480871
 sentencepiece
+pandas==1.4.3
 Pillow==9.2.0
 fastapi[all]
 opencv_python_headless==4.5.3.56
