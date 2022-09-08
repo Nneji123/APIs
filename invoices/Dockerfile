@@ -12,7 +12,8 @@ RUN pip install --upgrade setuptools
 
 ADD requirements.txt .
 
-RUN pip install -r requirements.txt
+RUN pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu \
+  && pip install -r requirements.txt
 
 ADD . .
 
